@@ -1,13 +1,28 @@
-
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
-import ProtectedRoute from './components/ProtectedRoute'
-import DashboardLayout from './components/DashboardLayout'
-import NotFound from './pages/NotFound'
+import Login from './pages/Login.jsx'
+import KontrolAkunAdmin from './pages/KontrolAkunAdmin.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import DashboardLayout from './components/DashboardLayout.jsx'
+import ModulLab from './pages/ModulLab.jsx'
+import NotFound from './pages/NotFound.jsx'
 import './App.css'
 
-function App() {
+function DashboardHome() {
+  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const role = user?.role
+
+  if (role === 'super_admin') {
+    return <KontrolAkunAdmin />
+  }
+
+  if (role === 'admin') {
+    return <ModulLab />
+  }
+
+  return <Navigate to="/login" replace />
+}
+
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
@@ -22,7 +37,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard />} />
+          <Route index element={<DashboardHome />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
@@ -30,5 +45,3 @@ function App() {
     </BrowserRouter>
   )
 }
-
-export default App

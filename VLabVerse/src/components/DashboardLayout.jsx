@@ -1,56 +1,33 @@
+import { useState } from 'react'
+import { Navigate, Outlet } from 'react-router-dom'
+import Sidebar from '../components/Sidebar'
+import './DashboardLayout.css'
+import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined'
 
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 function DashboardLayout() {
-  const navigate = useNavigate()
-  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    navigate('/login', { replace: true })
+  // Guard sederhana: tanpa token, kembali ke halaman login.
+  if (!localStorage.getItem('token')) {
+    return <Navigate to="/login" replace />
   }
 
   return (
     <div className="dashboard-layout">
-      <aside className="dashboard-sidebar">
-        <div className="dashboard-brand">
-          <span className="dashboard-brand-icon">V</span>
-          <span>V-LabVerse</span>
-        </div>
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-        <p className="sidebar-label">MENU UTAMA</p>
-
-        <nav className="sidebar-nav">
-          <NavLink to="/dashboard" end>
-            <span>▦</span> Dashboard
-          </NavLink>
-        </nav>
-
-        <div className="sidebar-bottom">
-          <p>Virtual Laboratory Platform</p>
-          <button type="button" onClick={handleLogout}>
-            ↪ Keluar
+      <div className="dashboard-body">
+        <header className="dashboard-topbar">
+          <button
+            type="button"
+            className="dashboard-menu-button"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Buka menu"
+          >
+            <MenuOutlinedIcon />
           </button>
-        </div>
-      </aside>
-
-      <div className="dashboard-main">
-        <header className="dashboard-header">
-          <div>
-            <p className="header-caption">V-LABVERSE / ADMIN PANEL</p>
-            <h2>Dashboard</h2>
-          </div>
-
-          <div className="header-user">
-            <div className="user-avatar">
-              {(user.nama || 'A').charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <strong>{user.nama || 'Admin'}</strong>
-              <span>{user.role === 'super_admin' ? 'Super Admin' : 'Admin'}</span>
-            </div>
-          </div>
+          <span>V-LabVerse</span>
         </header>
 
         <main className="dashboard-content">
