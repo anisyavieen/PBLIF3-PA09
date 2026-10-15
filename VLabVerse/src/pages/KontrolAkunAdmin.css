@@ -1,0 +1,295 @@
+
+.akun-page {
+  isolation: isolate;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 28px 32px 40px;
+  color: #0f172a;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Judul halaman */
+.akun-page h1 {
+  margin: 0 0 32px;
+  padding: 0;
+  color: #0f172a;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(22px, 2vw, 28px);
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Toolbar */
+.akun-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto 16px;
+}
+
+/* Tombol tambah: kotak dengan radius 5px */
+.akun-page .btn-tambah {
+  min-height: 40px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  border: 1px solid #1d4ed8;
+  border-radius: 5px;
+  background: #1d4ed8;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.akun-page .btn-tambah svg {
+  font-size: 20px;
+}
+
+.akun-page .btn-tambah:hover {
+  background: #1e40af;
+  box-shadow: 0 2px 6px #1d4ed826;
+}
+
+.akun-page .btn-tambah:focus-visible,
+.akun-page .btn-aksi:focus-visible,
+.akun-page .akun-retry:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
+
+/* Pembungkus tabel */
+.akun-table-wrap {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+/* Tabel */
+.akun-table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: #ffffff;
+  font-size: 13px;
+}
+
+.akun-table th {
+  padding: 13px 10px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  border-right: 1px solid #ffffff20;
+}
+
+.akun-table th:last-child {
+  border-right: none;
+}
+
+.akun-table td {
+  padding: 14px 10px;
+  color: #334155;
+  text-align: center;
+  vertical-align: middle;
+  border-top: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+.akun-table td:last-child {
+  border-right: none;
+}
+
+.akun-table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.akun-table tbody tr:hover {
+  background: #f1f5f9;
+}
+
+/* Proporsi kolom */
+.akun-table th:nth-child(1) {
+  width: 6%;
+}
+
+.akun-table th:nth-child(2) {
+  width: 23%;
+}
+
+.akun-table th:nth-child(3) {
+  width: 25%;
+}
+
+.akun-table th:nth-child(4) {
+  width: 17%;
+}
+
+.akun-table th:nth-child(5) {
+  width: 29%;
+}
+
+/* Email */
+.akun-table td.col-email {
+  text-align: left;
+}
+
+.akun-table td.col-email a {
+  color: #1d4ed8;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.akun-table td.col-email a:hover {
+  text-decoration: underline;
+}
+
+/* Status akun */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.aktif {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.nonaktif {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* Tombol Edit dan Hapus */
+.aksi-buttons,
+.akun-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.akun-page .btn-aksi,
+.akun-page .aksi-buttons button {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid;
+  border-radius: 5px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.akun-page .btn-aksi svg,
+.akun-page .aksi-buttons button svg {
+  font-size: 19px;
+}
+
+/* Edit: oranye */
+.akun-page .btn-edit,
+.akun-page .aksi-buttons .btn-edit {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.akun-page .btn-edit:hover,
+.akun-page .aksi-buttons .btn-edit:hover {
+  border-color: #fb923c;
+  background: #ffedd5;
+}
+
+/* Hapus: merah */
+.akun-page .btn-hapus,
+.akun-page .aksi-buttons .btn-hapus {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.akun-page .btn-hapus:hover,
+.akun-page .aksi-buttons .btn-hapus:hover {
+  border-color: #f87171;
+  background: #fee2e2;
+}
+
+/* Loading, error, dan data kosong */
+.akun-table td.akun-state {
+  padding: 28px 12px;
+  color: #64748b;
+  text-align: center;
+}
+
+.akun-table td.akun-state-error {
+  color: #b91c1c;
+}
+
+.akun-retry {
+  min-height: 32px;
+  margin-left: 12px;
+  padding: 0 12px;
+  border: 1px solid #1d4ed8;
+  border-radius: 5px;
+  background: #ffffff;
+  color: #1d4ed8;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+  .akun-page {
+    padding: 24px 16px;
+  }
+
+  .akun-page h1 {
+    margin-bottom: 24px;
+    font-size: 22px;
+    text-align: left;
+  }
+
+  .akun-toolbar {
+    margin-bottom: 14px;
+  }
+
+  .akun-page .btn-tambah {
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .akun-page button {
+    transition: none;
+  }
+}
