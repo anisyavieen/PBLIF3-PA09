@@ -6,6 +6,8 @@ import DashboardLayout from './components/DashboardLayout.jsx'
 import ModulLab from './pages/ModulLab.jsx'
 import NotFound from './pages/NotFound.jsx'
 import './App.css'
+import LandingPage from './pages/LandingPage.jsx'
+
 
 function DashboardHome() {
   const user = JSON.parse(localStorage.getItem('user') || 'null')
@@ -26,7 +28,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
 
         <Route
