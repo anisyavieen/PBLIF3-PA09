@@ -11,7 +11,50 @@ import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined'
 
 import ConfirmDelete from '../components/ConfirmDelete'
 import Notification from '../components/Notification'
-import { getModul, createModul, updateModul, deleteModul } from "../../backend/modul";
+
+const API_URL = "http://localhost:3000/api/modul";
+
+async function requestModul(url, options = {}) {
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    ...options,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Gagal memproses modul.");
+  }
+
+  return data;
+}
+
+async function getModul() {
+  return requestModul(API_URL);
+}
+
+async function createModul(payload) {
+  return requestModul(API_URL, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+async function updateModul(id, payload) {
+  return requestModul(`${API_URL}/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+async function deleteModul(id) {
+  return requestModul(`${API_URL}/${id}`, {
+    method: "DELETE",
+  });
+}
+
 
 const ICON_BY_NAME = {
   'laju bakar': <RocketLaunchOutlinedIcon />,

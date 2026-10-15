@@ -1,72 +1,150 @@
-const STORAGE_KEY = 'mock_modul'
 
-const DEFAULT_DATA = [
-  {
-    id: 1,
-    nama: 'Laju bakar',
-    deskripsi:
-      'Simulasi pembakaran propelan roket dengan koefisien, tekanan, dan massa jenis.',
-    status: 'aktif',
-    jumlah_parameter: 5,
-    jumlah_grup: 3,
-  },
-  {
-    id: 2,
-    nama: 'FTIR',
-    deskripsi:
-      'Simulasi analisis gugus fungsi dan struktur kimia berdasarkan spektrum inframerah.',
-    status: 'nonaktif',
-    jumlah_parameter: 0,
-    jumlah_grup: 0,
-  },
-  {
-    id: 3,
-    nama: 'SEM-EDS',
-    deskripsi:
-      'Simulasi pengamatan struktur permukaan serta identifikasi unsur penyusun material.',
-    status: 'nonaktif',
-    jumlah_parameter: 0,
-    jumlah_grup: 0,
-  },
-]
+const express = require("express");
+const router = express.Router();
+const pool = require("./db");
 
-const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms))
-
-function readList() {
+// =====================================
+// GET: Mengambil semua modul
+// URL: GET /api/modul
+// =====================================
+router.get("/", async (req, res) => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : DEFAULT_DATA
-  } catch {
-    return DEFAULT_DATA
-  }
-}
+    const [rows] = await pool.query(
+      "SELECT * FROM lab_modules ORDER BY id DESC"
+    );
 
-function writeList(list) {
+    const modules = rows.map((item) => ({
+      id: item.id,
+      nama: item.title,
+      deskripsi: item.description,
+      status: item.status,
+      image_url: item.image_url,
+      jumlah_parameter: 0,
+      jumlah_grup: 0,
+    }));
+
+    res.json(modules);
+  } catch (error) {
+    console.error("Gagal mengambil modul:", error.message);
+
+    res.status(500).json({
+      message: "Gagal mengambil data modul.",
+    });
+  }
+});
+
+// =====================================
+// POST: Menambahkan modul
+// URL: POST /api/modul
+// =====================================
+router.post("/", async (req, res) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list))
-  } catch {
-    // abaikan jika penyimpanan penuh/diblokir
+    const { nama, deskripsi, status, image_url } = req.body;
+
+    if (!nama || !deskripsi) {
+      return res.status(400).json({
+        message: "Nama dan deskripsi modul wajib diisi.",
+      });
+    }
+
+    const statusModul =
+      status === "nonaktif" ? "nonaktif" : "aktif";
+
+    const [result] = await pool.query(
+      `INSERT INTO lab_modules
+       (title, description, status, image_url)
+       VALUES (?, ?, ?, ?)`,
+      [nama, deskripsi, statusModul, image_url || null]
+    );
+
+    res.status(201).json({
+      message: "Modul berhasil ditambahkan.",
+      id: result.insertId,
+    });
+  } catch (error) {
+    console.error("Gagal menambahkan modul:", error.message);
+
+    res.status(500).json({
+      message: "Gagal menambahkan modul.",
+    });
   }
-}
+});
 
-export async function getModul() {
-  await delay()
-  return readList()
-}
+// =====================================
+// PUT: Mengedit modul
+// URL: PUT /api/modul/:id
+// =====================================
+router.put("/:id", async (req, res) => {
+  try {
+    const { nama, deskripsi, status, image_url } = req.body;
+    const { id } = req.params;
 
-export async function createModul(payload) {
-  await delay()
-  const item = { id: Date.now(), jumlah_parameter: 0, jumlah_grup: 0, ...payload }
-  writeList([...readList(), item])
-  return item
-}
+    if (!nama || !deskripsi) {
+      return res.status(400).json({
+        message: "Nama dan deskripsi modul wajib diisi.",
+      });
+    }
 
-export async function updateModul(id, payload) {
-  await delay()
-  writeList(readList().map((m) => (m.id === id ? { ...m, ...payload } : m)))
-}
+    const statusModul =
+      status === "nonaktif" ? "nonaktif" : "aktif";
 
-export async function deleteModul(id) {
-  await delay()
-  writeList(readList().filter((m) => m.id !== id))
-}
+    const [result] = await pool.query(
+      `UPDATE lab_modules
+       SET title = ?,
+           description = ?,
+           status = ?,
+           image_url = ?
+       WHERE id = ?`,
+      [nama, deskripsi, statusModul, image_url || null, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        message: "Modul tidak ditemukan.",
+      });
+    }
+
+    res.json({
+      message: "Modul berhasil diperbarui.",
+    });
+  } catch (error) {
+    console.error("Gagal mengedit modul:", error.message);
+
+    res.status(500).json({
+      message: "Gagal mengedit modul.",
+    });
+  }
+});
+
+// =====================================
+// DELETE: Menghapus modul
+// URL: DELETE /api/modul/:id
+// =====================================
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [result] = await pool.query(
+      "DELETE FROM lab_modules WHERE id = ?",
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        message: "Modul tidak ditemukan.",
+      });
+    }
+
+    res.json({
+      message: "Modul berhasil dihapus.",
+    });
+  } catch (error) {
+    console.error("Gagal menghapus modul:", error.message);
+
+    res.status(500).json({
+      message: "Gagal menghapus modul.",
+    });
+  }
+});
+
+module.exports = router;
