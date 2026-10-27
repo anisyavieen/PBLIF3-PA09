@@ -111,7 +111,7 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
-<<<<<<< HEAD
+
 
 /* RESPONSIVE TABLET DAN HP */
 @media (max-width: 1024px) {
@@ -128,5 +128,4 @@ code {
     font-size: 20px;
   }
 }
-=======
->>>>>>> origin/develop
+
