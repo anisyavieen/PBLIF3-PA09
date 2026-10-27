@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './ModulLab.css'
 
 import AddIcon from '@mui/icons-material/Add'
@@ -199,6 +200,7 @@ function ModalModul({ open, onClose, onSubmit, editId, form, onChange, saving, e
 
 /* ---------- Halaman Daftar Modul ---------- */
 function DaftarModul() {
+  const navigate = useNavigate()
   const [modules, setModules] = useState([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
@@ -319,8 +321,7 @@ function DaftarModul() {
   }
 
   const handleKelola = (modul) => {
-    // TODO: navigate(`/modul/${modul.id}`) ke halaman kelola parameter
-    console.log('Kelola', modul.nama)
+    navigate(`/dashboard/modul/${modul.id}/kelola`)
   }
 
   const renderList = () => {

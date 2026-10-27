@@ -1,10 +1,4 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-} from 'react-router-dom'
-
+import {BrowserRouter, Routes, Route ,Navigate,} from 'react-router-dom'
 import Login from './pages/Login.jsx'
 import KontrolAkunAdmin from './pages/KontrolAkunAdmin.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
@@ -14,8 +8,9 @@ import NotFound from './pages/NotFound.jsx'
 import LandingPage from './pages/LandingPage.jsx'
 import './App.css'
 import LandingPageAdmin from './pages/LandingPageAdmin.jsx'
+import UjiCoba from './pages/UjiCoba.jsx'
+import KelolaModul from './pages/KelolaModul.jsx'
 
-// Menentukan halaman awal berdasarkan role
 function DashboardHome() {
   let user = null
 
@@ -36,9 +31,8 @@ function DashboardHome() {
   return <Navigate to="/login" replace />
 }
 
-// Landingpage Admin masih kosong
+// Landingpage Admin
 
-// Hasil Riwayat masih kosong
 function HasilRiwayat() {
   return null
 }
@@ -47,13 +41,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Landingpage umum */}
         <Route path="/" element={<LandingPage />} />
-
-        {/* Login */}
+        <Route path="/uji-coba" element={<UjiCoba />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Halaman panel */}
         <Route
           path="/dashboard"
           element={
@@ -63,7 +54,6 @@ export default function App() {
           }
         >
           <Route index element={<DashboardHome />} />
-
           <Route
             path="landingpage"
             element={<LandingPageAdmin />}
@@ -75,12 +65,16 @@ export default function App() {
           />
 
           <Route
+            path="modul/:id/kelola"
+            element={<KelolaModul />}
+          />
+
+          <Route
             path="riwayat"
             element={<HasilRiwayat />}
           />
         </Route>
 
-        {/* Halaman tidak ditemukan */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

@@ -1,40 +1,165 @@
+import { useEffect, useState } from 'react'
 import './LandingPage.css'
 import Navbar from '../components/Navbar.jsx'
 import Footer from '../components/Footer.jsx'
 import rocket from '../assets/roket.jpg'
+import WhatshotOutlinedIcon from '@mui/icons-material/WhatshotOutlined'
+import AnimationOutlinedIcon from '@mui/icons-material/AnimationOutlined'
+import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined'
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
+
+
+const API_URL = 'http://localhost:3000/api/landing-page'
+
+const defaultFeatures = [
+  {
+    judul: 'Perhitungan Laju Bakar',
+    keterangan:
+      'Menghitung laju bakar berdasarkan parameter propelan dan kondisi pengujian.',
+  },
+  {
+    judul: 'Simulasi Pembakaran',
+    keterangan:
+      'Menampilkan simulasi proses pembakaran melalui animasi visual.',
+  },
+  {
+    judul: 'Hasil Perhitungan',
+    keterangan:
+      'Menampilkan hasil perhitungan secara terstruktur dalam bentuk tabel.',
+  },
+  {
+    judul: 'Ekspor Data CSV',
+    keterangan:
+      'Mengunduh hasil perhitungan untuk dokumentasi dan analisis lebih lanjut.',
+  },
+]
+
+const defaultSteps = [
+  {
+    judul: 'Pilih Parameter',
+    keterangan:
+      'Tentukan jenis propelan dan masukkan parameter pengujian yang dibutuhkan.',
+  },
+  {
+    judul: 'Jalankan Simulasi',
+    keterangan:
+      'Mulai simulasi untuk memproses parameter yang sudah dimasukkan.',
+  },
+  {
+    judul: 'Lihat Hasil',
+    keterangan:
+      'Lihat hasil perhitungan laju bakar dan animasi pembakaran yang ditampilkan.',
+  },
+  {
+    judul: 'Unduh Data',
+    keterangan:
+      'Unduh hasil perhitungan dalam format CSV untuk dokumentasi dan analisis.',
+  },
+]
 
 export default function LandingPage() {
+  const [konten, setKonten] = useState({
+    hero: {
+      judul: 'V-LabVerse',
+      deskripsi:
+        'Platform lab virtual untuk simulasi sains dan laju bakar roket.',
+      gambar: '',
+    },
+    fitur: defaultFeatures,
+    langkah: defaultSteps,
+  })
+
+  useEffect(() => {
+    async function ambilKonten() {
+      try {
+        const response = await fetch(API_URL)
+
+        if (!response.ok) {
+          throw new Error('Gagal mengambil konten landing page.')
+        }
+
+        const rows = await response.json()
+
+        const hero = rows.find(
+          (item) => item.section_key === 'hero'
+        )
+
+        const fitur = defaultFeatures.map((item, index) => {
+          const row = rows.find(
+            (data) => data.section_key === `fitur_${index + 1}`
+          )
+
+          return {
+            judul: row?.title || item.judul,
+            keterangan: row?.description || item.keterangan,
+          }
+        })
+
+        const langkah = defaultSteps.map((item, index) => {
+          const row = rows.find(
+            (data) => data.section_key === `langkah_${index + 1}`
+          )
+
+          return {
+            judul: row?.title || item.judul,
+            keterangan: row?.description || item.keterangan,
+          }
+        })
+
+        setKonten({
+          hero: {
+            judul: hero?.title || 'V-LabVerse',
+            deskripsi:
+              hero?.description ||
+              'Platform lab virtual untuk simulasi sains dan laju bakar roket.',
+            gambar: hero?.image_url || '',
+          },
+          fitur,
+          langkah,
+        })
+      } catch (error) {
+        console.error('Gagal mengambil konten:', error)
+      }
+    }
+
+    ambilKonten()
+  }, [])
+
   return (
     <div className="landing-page">
       <Navbar />
 
-      {/* Hero Section */}
+      {/* Bagian Hero */}
       <section className="landing-hero" id="home">
         <div className="landing-hero-content">
-          <h1>V-LabVerse</h1>
+          <h1>{konten.hero.judul}</h1>
 
-          <p>
-            Platform lab virtual untuk simulasi sains
-            dan laju bakar roket.
-          </p>
+          <p>{konten.hero.deskripsi}</p>
 
           <div className="landing-hero-buttons">
             <a href="#cara-kerja" className="btn-outline">
               Lihat Cara Kerja
             </a>
 
-            <a href="/login" className="btn-orange">
+            
+            <a href="/uji-coba" className="btn-orange">
               Mulai Uji Coba
             </a>
           </div>
         </div>
 
-        <div className="landing-hero-image">
-          <img
-            src={rocket}
-            alt="Ilustrasi roket V-LabVerse"
-          />
-        </div>
+      <div className="landing-hero-image">
+        <img
+          src={
+            konten.hero.gambar
+              ? konten.hero.gambar.startsWith('http')
+                ? konten.hero.gambar
+                : `http://localhost:3000${konten.hero.gambar}`
+              : rocket
+          }
+          alt="Ilustrasi roket V-LabVerse"
+        />
+      </div>
       </section>
 
       {/* Fitur Utama */}
@@ -48,46 +173,28 @@ export default function LandingPage() {
         </div>
 
         <div className="features-grid">
-          <article className="feature-card">
-            <div className="feature-icon">🧮</div>
-            <h3>Perhitungan Laju Bakar</h3>
-            <p>
-              Menghitung laju bakar berdasarkan parameter
-              propelan dan kondisi pengujian.
-            </p>
-          </article>
-
-          <article className="feature-card">
-            <div className="feature-icon">🚀</div>
-            <h3>Simulasi Pembakaran</h3>
-            <p>
-              Menampilkan simulasi proses pembakaran
-              melalui animasi visual.
-            </p>
-          </article>
-
-          <article className="feature-card">
-            <div className="feature-icon">📊</div>
-            <h3>Hasil Perhitungan</h3>
-            <p>
-              Menampilkan hasil perhitungan secara
-              terstruktur dalam bentuk tabel.
-            </p>
-          </article>
-
-          <article className="feature-card">
-            <div className="feature-icon">📥</div>
-            <h3>Ekspor Data CSV</h3>
-            <p>
-              Mengunduh hasil perhitungan untuk
-              dokumentasi dan analisis lebih lanjut.
-            </p>
-          </article>
+          {konten.fitur.map((item, index) => (
+            <article className="feature-card" key={index}>
+              <div className={`feature-icon ${
+                ['blue', 'orange', 'green', 'purple'][index]
+              }`}>
+                {index === 0 && <WhatshotOutlinedIcon />}
+                {index === 1 && <AnimationOutlinedIcon />}
+                {index === 2 && <TableChartOutlinedIcon />}
+                {index === 3 && <FileDownloadOutlinedIcon />}
+              </div>
+              <h3>{item.judul}</h3>
+              <p>{item.keterangan}</p>
+            </article>
+          ))}
         </div>
       </section>
 
-      {/* Bagian Cara Kerja */}
-      <section className="landing-how-it-works" id="cara-kerja">
+      {/* Cara Kerja */}
+      <section
+        className="landing-how-it-works"
+        id="cara-kerja"
+      >
         <div className="how-heading">
           <h2>Bagaimana Cara Kerjanya?</h2>
           <p>
@@ -97,55 +204,15 @@ export default function LandingPage() {
         </div>
 
         <div className="steps-grid">
-          <article className="step-card">
-            <div className="step-number">01</div>
-            <h3>Pilih Parameter</h3>
-            <p>
-              Tentukan jenis propelan dan masukkan parameter
-              pengujian yang dibutuhkan.
-            </p>
-          </article>
-
-          <article className="step-card">
-            <div className="step-number">02</div>
-            <h3>Jalankan Simulasi</h3>
-            <p>
-              Mulai simulasi untuk memproses parameter yang
-              sudah dimasukkan.
-            </p>
-          </article>
-
-          <article className="step-card">
-            <div className="step-number">03</div>
-            <h3>Lihat Hasil</h3>
-            <p>
-              Lihat hasil perhitungan laju bakar dan animasi
-              pembakaran yang ditampilkan.
-            </p>
-          </article>
-
-          <article className="step-card">
-            <div className="step-number">04</div>
-            <h3>Unduh Data</h3>
-            <p>
-              Unduh hasil perhitungan dalam format CSV untuk
-              dokumentasi dan analisis.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      {/* Bagian Kontak */}
-      <section className="landing-contact" id="kontak">
-        <div className="contact-content">
-          <h2>Siap Mencoba V-LabVerse?</h2>
-          <p>
-            Mulai eksplorasi simulasi laju bakar roket melalui
-            platform lab virtual yang mudah digunakan.
-          </p>
-          <a href="/login" className="contact-button">
-            Mulai Simulasi
-          </a>
+          {konten.langkah.map((item, index) => (
+            <article className="step-card" key={index}>
+              <div className="step-number">
+                {String(index + 1).padStart(2, '0')}
+              </div>
+              <h3>{item.judul}</h3>
+              <p>{item.keterangan}</p>
+            </article>
+          ))}
         </div>
       </section>
 

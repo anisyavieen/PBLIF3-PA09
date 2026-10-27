@@ -22,10 +22,13 @@ const defaultData = {
     { judul: '', keterangan: '' },
     { judul: '', keterangan: '' },
   ],
-  kontak: {
+    kontak: {
+    judul: 'Jelajahi Sains Melalui Simulasi',
+    deskripsi:
+      'Laboratorium virtual untuk simulasi laju bakar propelan. Pelajari parameter pengujian, jalankan simulasi, dan pahami hasilnya dengan lebih mudah melalui V-LabVerse.',
     email: '',
-    instagram: '',
     whatsapp: '',
+    instagram: '',
     youtube: '',
     facebook: '',
     alamat: '',
@@ -139,6 +142,37 @@ export default function LandingPageAdmin() {
       },
     }))
   }
+  const handleHeroImageUpload = async (file) => {
+  if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    setPesan('File harus berupa gambar.')
+    return
+  }
+
+  const formData = new FormData()
+  formData.append('gambar', file)
+
+  try {
+    setPesan('Mengunggah foto...')
+
+    const response = await fetch(`${API_URL}/upload`, {
+      method: 'POST',
+      body: formData,
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Gagal mengunggah foto.')
+    }
+
+    handleHeroChange('gambar', data.image_url)
+    setPesan('Foto berhasil diunggah.')
+  } catch (error) {
+    setPesan(`Gagal mengunggah foto: ${error.message}`)
+  }
+}
 
   const handleCardChange = (section, index, field, value) => {
     setForm((prev) => ({
@@ -169,14 +203,10 @@ export default function LandingPageAdmin() {
       return
     }
 
-    if (
-      form.hero.gambar &&
-      form.hero.gambar.length > 255
-    ) {
-      setPesan('URL gambar maksimal 255 karakter.')
+    if (form.hero.gambar && form.hero.gambar.length > 255) {
+      setPesan('Path gambar maksimal 255 karakter.')
       return
     }
-
     setMenyimpan(true)
     setPesan('')
 
@@ -239,7 +269,7 @@ export default function LandingPageAdmin() {
 
       setDataDatabase(rowsTerbaru)
       setForm(mapRowsToForm(rowsTerbaru))
-      setPesan('Perubahan berhasil disimpan ke database!')
+      setPesan('Data berhasil diubah!')
     } catch (error) {
       setPesan(`Gagal menyimpan: ${error.message}`)
     } finally {
@@ -302,24 +332,28 @@ export default function LandingPageAdmin() {
           </div>
 
           <div className="landing-field">
-            <label htmlFor="hero-gambar">URL Gambar Hero</label>
+            <label htmlFor="hero-gambar">Foto Hero</label>
+
             <input
               id="hero-gambar"
-              type="url"
-              maxLength={255}
-              placeholder="https://contoh.com/roket.jpg"
-              value={form.hero.gambar}
+              type="file"
+              accept="image/*"
               onChange={(e) =>
-                handleHeroChange('gambar', e.target.value)
+                handleHeroImageUpload(e.target.files[0])
               }
             />
 
             {form.hero.gambar && (
               <div className="landing-image-preview">
                 <img
-                  src={form.hero.gambar}
+                  src={
+                    form.hero.gambar.startsWith('http')
+                      ? form.hero.gambar
+                      : `http://localhost:3000${form.hero.gambar}`
+                  }
                   alt="Preview gambar Hero"
                 />
+
                 <button
                   type="button"
                   className="landing-remove-image"
@@ -444,9 +478,34 @@ export default function LandingPageAdmin() {
           </div>
         </section>
 
+
         {/* KONTAK */}
         <section className="landing-section">
-          <h2>Kontak</h2>
+          <h2>Footer dan Kontak</h2>
+
+          <div className="landing-field">
+            <label htmlFor="footer-judul">Judul Footer</label>
+            <input
+              id="footer-judul"
+              type="text"
+              value={form.kontak.judul || ''}
+              onChange={(e) =>
+                handleContactChange('judul', e.target.value)
+              }
+            />
+          </div>
+
+          <div className="landing-field">
+            <label htmlFor="footer-deskripsi">Deskripsi Footer</label>
+            <textarea
+              id="footer-deskripsi"
+              rows={3}
+              value={form.kontak.deskripsi || ''}
+              onChange={(e) =>
+                handleContactChange('deskripsi', e.target.value)
+              }
+            />
+          </div>
 
           <div className="landing-contact-grid">
             <div className="landing-field">
@@ -454,7 +513,7 @@ export default function LandingPageAdmin() {
               <input
                 id="kontak-email"
                 type="email"
-                value={form.kontak.email}
+                value={form.kontak.email || ''}
                 onChange={(e) =>
                   handleContactChange('email', e.target.value)
                 }
@@ -466,7 +525,7 @@ export default function LandingPageAdmin() {
               <input
                 id="kontak-instagram"
                 type="text"
-                value={form.kontak.instagram}
+                value={form.kontak.instagram || ''}
                 onChange={(e) =>
                   handleContactChange('instagram', e.target.value)
                 }
@@ -480,7 +539,7 @@ export default function LandingPageAdmin() {
               <input
                 id="kontak-whatsapp"
                 type="text"
-                value={form.kontak.whatsapp}
+                value={form.kontak.whatsapp || ''}
                 onChange={(e) =>
                   handleContactChange('whatsapp', e.target.value)
                 }
@@ -492,7 +551,7 @@ export default function LandingPageAdmin() {
               <input
                 id="kontak-youtube"
                 type="text"
-                value={form.kontak.youtube}
+                value={form.kontak.youtube || ''}
                 onChange={(e) =>
                   handleContactChange('youtube', e.target.value)
                 }
@@ -503,8 +562,8 @@ export default function LandingPageAdmin() {
               <label htmlFor="kontak-alamat">Alamat</label>
               <textarea
                 id="kontak-alamat"
-                rows="3"
-                value={form.kontak.alamat}
+                rows={3}
+                value={form.kontak.alamat || ''}
                 onChange={(e) =>
                   handleContactChange('alamat', e.target.value)
                 }
@@ -516,7 +575,7 @@ export default function LandingPageAdmin() {
               <input
                 id="kontak-facebook"
                 type="text"
-                value={form.kontak.facebook}
+                value={form.kontak.facebook || ''}
                 onChange={(e) =>
                   handleContactChange('facebook', e.target.value)
                 }
