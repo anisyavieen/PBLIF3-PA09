@@ -23,10 +23,10 @@ function FlaskIcon() {
 export default function Navbar() {
   return (
     <nav className="vlab-navbar">
-      <a href="#home" className="vlab-logo">
+      <div className="vlab-logo">
         <FlaskIcon />
         <span>V-LabVerse</span>
-      </a>
+      </div>
 
       <div className="vlab-nav-links">
         <a href="#home">Home</a>

@@ -1,7 +1,9 @@
-
 /* PENGATURAN HALAMAN */
 .landing-page {
+  width: 100%;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
   background: #ffffff;
   color: #1e293b;
   font-family: Arial, sans-serif;
@@ -117,9 +119,6 @@
   align-items: stretch;
 }
 
-
-/* KARTU FITUR */
-
 /* KARTU FITUR */
 .feature-card {
   padding: 24px 20px;
@@ -134,7 +133,6 @@
   box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
 }
 
-
 .feature-icon {
   width: 48px;
   height: 48px;
@@ -142,24 +140,31 @@
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  font-size: 24px;
   margin-bottom: 18px;
+}
+
+.feature-icon svg {
+  font-size: 28px;
 }
 
 .feature-icon.blue {
   background: #e8eeff;
+  color: #2855e8;
 }
 
 .feature-icon.orange {
   background: #fff0e5;
+  color: #f97316;
 }
 
 .feature-icon.green {
   background: #e3f7ed;
+  color: #16a34a;
 }
 
 .feature-icon.purple {
   background: #f1e8ff;
+  color: #9333ea;
 }
 
 .feature-card h3 {
@@ -305,95 +310,6 @@
   }
 }
 
-/* BAGIAN KONTAK */
-.landing-contact {
-  padding: 65px 7%;
-  background: #eaf0ff;
-  text-align: center;
-}
-
-.contact-content {
-  max-width: 650px;
-  margin: 0 auto;
-}
-
-.contact-content h2 {
-  margin-bottom: 16px;
-  color: #1e293b;
-  font-size: 30px;
-}
-
-.contact-content p {
-  margin-bottom: 25px;
-  color: #64748b;
-  font-size: 15px;
-  line-height: 1.8;
-}
-
-.contact-button {
-  display: inline-block;
-  padding: 13px 24px;
-  border-radius: 25px;
-  background: #2855e8;
-  color: #fff;
-  font-size: 14px;
-  font-weight: bold;
-  text-decoration: none;
-  transition: background 0.2s;
-}
-
-.contact-button:hover {
-  background: #1d40b5;
-}
-
-/* FOOTER */
-.landing-footer {
-  padding: 35px 7% 20px;
-  background: #101a35;
-  color: #fff;
-}
-
-.footer-brand {
-  text-align: center;
-}
-
-.footer-brand h3 {
-  margin-bottom: 10px;
-  font-size: 22px;
-}
-
-.footer-brand p {
-  color: #cbd5e1;
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.footer-links {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 24px;
-  margin: 25px 0;
-}
-
-.footer-links a {
-  color: #e2e8f0;
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.footer-links a:hover {
-  color: #93c5fd;
-}
-
-.footer-bottom {
-  padding-top: 20px;
-  border-top: 1px solid #334155;
-  color: #cbd5e1;
-  font-size: 12px;
-  text-align: center;
-}
-
 @media (max-width: 500px) {
   .landing-contact {
     padding: 45px 5%;
@@ -401,10 +317,6 @@
 
   .contact-content h2 {
     font-size: 25px;
-  }
-
-  .footer-links {
-    gap: 16px;
   }
 }
 

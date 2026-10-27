@@ -9,7 +9,7 @@ import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined'
 const MENU_ITEMS = [
   {
     to: '/dashboard/landingpage',
-    label: 'Landingpage',
+    label: 'Data Content',
     icon: <HomeOutlinedIcon />,
   },
   {

@@ -2,6 +2,31 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("./db");
+const multer = require("multer");
+const path = require("path");
+
+// Konfigurasi penyimpanan foto
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "uploads"));
+  },
+  filename: (req, file, cb) => {
+    const namaFile = Date.now() + path.extname(file.originalname);
+    cb(null, namaFile);
+  },
+});
+
+// Hanya menerima file gambar
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("File harus berupa gambar."));
+    }
+  },
+});
 
 // GET: Menampilkan semua konten landing page
 router.get("/", async (req, res) => {
@@ -156,6 +181,28 @@ router.delete("/:id", async (req, res) => {
       message: "Gagal menghapus konten landing page.",
     });
   }
+});
+
+// POST: Upload foto Hero
+router.post("/upload", (req, res) => {
+  upload.single("gambar")(req, res, (error) => {
+    if (error) {
+      return res.status(400).json({
+        message: error.message || "Gagal mengunggah foto.",
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Pilih foto terlebih dahulu.",
+      });
+    }
+
+    res.json({
+      message: "Foto berhasil diunggah.",
+      image_url: `/uploads/${req.file.filename}`,
+    });
+  });
 });
 
 module.exports = router;

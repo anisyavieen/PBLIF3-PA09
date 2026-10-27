@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import './Footer.css'
 
 function InfoIcon() {
@@ -74,7 +75,59 @@ function LocationIcon() {
   )
 }
 
+const defaultKontak = {
+  judul: 'Jelajahi Sains Melalui Simulasi',
+  deskripsi:
+    'Laboratorium virtual untuk simulasi laju bakar propelan. Pelajari parameter pengujian, jalankan simulasi, dan pahami hasilnya dengan lebih mudah melalui V-LabVerse.',
+  email: '',
+  whatsapp: '',
+  instagram: '',
+  youtube: '',
+  facebook: '',
+  alamat: '',
+}
+
 export default function Footer() {
+  const [kontak, setKontak] = useState(defaultKontak)
+
+  useEffect(() => {
+    async function loadFooter() {
+      try {
+        const response = await fetch( 
+        'http://localhost:3000/api/landing-page'
+        )
+
+        if (!response.ok) {
+          throw new Error('Gagal mengambil data footer')
+        }
+
+        const rows = await response.json()
+
+        const rowKontak = rows.find(
+          (row) => row.section_key === 'kontak'
+        )
+
+        if (rowKontak?.description) {
+          const data =
+            typeof rowKontak.description === 'string'
+              ? JSON.parse(rowKontak.description)
+              : rowKontak.description
+
+          setKontak((prev) => ({
+            ...prev,
+            ...data,
+          }))
+        }
+      } catch (error) {
+        console.error('Gagal memuat footer:', error)
+      }
+    }
+
+    loadFooter()
+  }, [])
+
+  const nomorTelepon = (kontak.whatsapp || '').replace(/\D/g, '')
+
   return (
     <footer className="vlab-footer" id="kontak">
       <div className="footer-about">
@@ -85,74 +138,84 @@ export default function Footer() {
       </div>
 
       <div className="footer-socials">
-        <a
-          href="https://www.youtube.com/"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="YouTube"
-        >
-          <YoutubeIcon />
-          <span>Youtube</span>
-        </a>
+        {kontak.youtube && (
+          <a
+            href={kontak.youtube}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="YouTube"
+          >
+            <YoutubeIcon />
+            <span>YouTube</span>
+          </a>
+        )}
 
-        <a
-          href="https://www.facebook.com/"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Facebook"
-        >
-          <FacebookIcon />
-          <span>Facebook</span>
-        </a>
+        {kontak.facebook && (
+          <a
+            href={kontak.facebook}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Facebook"
+          >
+            <FacebookIcon />
+            <span>Facebook</span>
+          </a>
+        )}
 
-        <a
-          href="https://www.instagram.com/"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Instagram"
-        >
-          <InstagramIcon />
-          <span>Instagram</span>
-        </a>
+        {kontak.instagram && (
+          <a
+            href={kontak.instagram}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Instagram"
+          >
+            <InstagramIcon />
+            <span>Instagram</span>
+          </a>
+        )}
       </div>
 
       <div className="footer-intro">
         <h2>
           <RocketIcon />
-          Jelajahi Sains Melalui Simulasi
+          {kontak.judul}
         </h2>
-        <p>
-          Laboratorium virtual untuk simulasi laju bakar propelan.
-          <br />
-          Pelajari parameter pengujian, jalankan simulasi, dan pahami
-          hasilnya dengan lebih mudah melalui V-LabVerse.
-        </p>
+
+        <p>{kontak.deskripsi}</p>
       </div>
 
       <div className="footer-contact">
-        <a href="mailto:anisyabrin12@gmail.com" className="footer-contact-item">
-          <MailIcon />
-          <span>anisyabrin12@gmail.com</span>
-        </a>
+        {kontak.email && (
+          <a
+            href={`mailto:${kontak.email}`}
+            className="footer-contact-item"
+          >
+            <MailIcon />
+            <span>{kontak.email}</span>
+          </a>
+        )}
 
-        <a href="tel:+6282386396413" className="footer-contact-item">
-          <PhoneIcon />
-          <span>+62 (82386396413)</span>
-        </a>
+        {kontak.whatsapp && nomorTelepon && (
+          <a
+            href={`https://wa.me/${nomorTelepon}`}
+            className="footer-contact-item"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <PhoneIcon />
+            <span>{kontak.whatsapp}</span>
+          </a>
+        )}
 
-        <div className="footer-contact-item footer-address">
-          <LocationIcon />
-          <div>
-            <span>Politeknik Negeri Batam</span>
-            <p>
-              Jl. Ahmad Yani, Batam Center,
-              <br />
-              Kec. Batam Kota, Kota Batam,
-              <br />
-              Kepulauan Riau 29461, Indonesia
-            </p>
+        {kontak.alamat && (
+          <div className="footer-contact-item footer-address">
+            <LocationIcon />
+            <div>
+              <span>Alamat</span>
+              <p>{kontak.alamat}</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="footer-copyright">
