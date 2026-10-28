@@ -1,35 +1,21 @@
 import { useState } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
-import Sidebar from './Sidebar'
-import AdminSidebar from './AdminSidebar'
+import Sidebar from '../components/Sidebar'
 import './DashboardLayout.css'
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined'
+
 
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
-  const role = user?.role
-
+  // Guard sederhana: tanpa token, kembali ke halaman login.
   if (!localStorage.getItem('token')) {
     return <Navigate to="/login" replace />
   }
 
-  const handleCloseSidebar = () => setSidebarOpen(false)
-
   return (
     <div className="dashboard-layout">
-      {role === 'admin' ? (
-        <AdminSidebar
-          open={sidebarOpen}
-          onClose={handleCloseSidebar}
-        />
-      ) : (
-        <Sidebar
-          open={sidebarOpen}
-          onClose={handleCloseSidebar}
-        />
-      )}
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="dashboard-body">
         <header className="dashboard-topbar">
@@ -41,7 +27,6 @@ function DashboardLayout() {
           >
             <MenuOutlinedIcon />
           </button>
-
           <span>V-LabVerse</span>
         </header>
 
