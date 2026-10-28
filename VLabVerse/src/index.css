@@ -1,131 +1,103 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px,
-    rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  /* Font utama */
-  --sans: 'Inter', sans-serif;
-  --heading: 'Space Grotesk', sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 16px/1.5 var(--sans);
-  letter-spacing: normal;
-  color-scheme: light;
-  color: var(--text);
-  background: var(--bg);
+  font-family: 'Inter', sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  color: #252525;
+  background: #ffffff;
+
+  --sans: 'Inter', sans-serif;
+  --heading: 'Space Grotesk', sans-serif;
+
+  --text: #555555;
+  --text-h: #252525;
+  --bg: #ffffff;
+  --border: #e5e7eb;
+
+  --accent: #b91c1c;
+  --accent-bg: #fef2f2;
+  --accent-border: #fecaca;
+
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* DASAR HALAMAN */
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-html,
+html {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
 body {
   width: 100%;
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
   padding: 0;
-}
-
-body {
   font-family: var(--sans);
 }
 
-/* ROOT REACT */
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-/* JUDUL GLOBAL */
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 600;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-}
-
-h2 {
-  font-size: 24px;
-  line-height: 1.25;
-  letter-spacing: -0.3px;
-  margin: 0 0 8px;
-}
-
-/* PARAGRAF */
-p {
+  width: 100%;
+  min-height: 100vh;
   margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--heading);
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+p {
   font-family: var(--sans);
 }
 
-/* FORM DAN TOMBOL */
 button,
 input,
 textarea,
 select {
-  font-family: var(--sans);
+  font: inherit;
 }
 
-/* KODE PROGRAM */
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+button {
+  cursor: pointer;
 }
 
-code {
-  font-size: 15px;
-  line-height: 1.35;
-  padding: 4px 8px;
-  background: var(--code-bg);
+img,
+svg {
+  max-width: 100%;
 }
 
+input,
+textarea,
+select {
+  max-width: 100%;
+}
 
-/* RESPONSIVE TABLET DAN HP */
-@media (max-width: 1024px) {
-  :root {
-    font-size: 16px;
-  }
+a {
+  color: inherit;
+}
 
-  h1 {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-
-  h2 {
-    font-size: 20px;
+@media (max-width: 768px) {
+  html,
+  body {
+    min-width: 320px;
   }
 }
-

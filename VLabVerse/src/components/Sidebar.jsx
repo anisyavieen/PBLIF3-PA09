@@ -23,7 +23,7 @@ function Sidebar({ open = false, onClose }) {
   const handleLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
-    navigate('/login', { replace: true })
+    navigate('/', { replace: true })
   }
 
   return (
