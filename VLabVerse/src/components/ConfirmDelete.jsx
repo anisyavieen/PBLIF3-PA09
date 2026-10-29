@@ -1,4 +1,3 @@
-
 import {
   Dialog,
   DialogTitle,
@@ -14,6 +13,7 @@ function ConfirmDelete({
   onConfirm,
   nama,
   deleting,
+  objek = 'akun admin',
 }) {
   return (
     <Dialog
@@ -26,8 +26,8 @@ function ConfirmDelete({
 
       <DialogContent>
         <DialogContentText>
-          Yakin ingin menghapus akun admin{' '}
-          <strong>{nama}</strong>?
+          Yakin ingin menghapus {objek}{' '}
+          {nama ? <strong>{nama}</strong> : 'ini'}?
         </DialogContentText>
       </DialogContent>
 
