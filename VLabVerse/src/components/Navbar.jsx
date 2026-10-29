@@ -29,14 +29,14 @@ export default function Navbar() {
       </div>
 
       <div className="vlab-nav-links">
-        <a href="#home">Home</a>
-        <a href="#fitur">Fitur</a>
-        <a href="#cara-kerja">Cara Kerja</a>
-        <a href="#kontak">Kontak</a>
-        <a href="/login" className="vlab-login">
-          Login
-        </a>
-      </div>
+      <a href="/">Home</a>
+      <a href="/#fitur">Fitur</a>
+      <a href="/#cara-kerja">Cara Kerja</a>
+      <a href="/#kontak">Kontak</a>
+      <a href="/login" className="vlab-login">
+        Login
+      </a>
+    </div>
     </nav>
   )
 }
