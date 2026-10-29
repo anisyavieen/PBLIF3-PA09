@@ -1,25 +1,32 @@
 import { useState } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
-import Sidebar from './Sidebar'
-import AdminSidebar from './AdminSidebar'
+import Sidebar from '../components/Sidebar'
+import AdminSidebar from '../components/AdminSidebar'
 import './DashboardLayout.css'
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined'
 
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
-  const role = user?.role
+  let user = null
+
+  try {
+    user = JSON.parse(localStorage.getItem('user') || 'null')
+  } catch {
+    user = null
+  }
 
   if (!localStorage.getItem('token')) {
     return <Navigate to="/login" replace />
   }
 
-  const handleCloseSidebar = () => setSidebarOpen(false)
+  const handleCloseSidebar = () => {
+    setSidebarOpen(false)
+  }
 
   return (
     <div className="dashboard-layout">
-      {role === 'admin' ? (
+      {user?.role === 'admin' ? (
         <AdminSidebar
           open={sidebarOpen}
           onClose={handleCloseSidebar}

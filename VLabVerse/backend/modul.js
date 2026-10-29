@@ -3,10 +3,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("./db");
 
-// =====================================
-// GET: Mengambil semua modul
-// URL: GET /api/modul
-// =====================================
+
 router.get("/", async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -33,10 +30,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// =====================================
-// POST: Menambahkan modul
-// URL: POST /api/modul
-// =====================================
+
 router.post("/", async (req, res) => {
   try {
     const { nama, deskripsi, status, image_url } = req.body;
@@ -70,10 +64,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// =====================================
-// PUT: Mengedit modul
-// URL: PUT /api/modul/:id
-// =====================================
+
 router.put("/:id", async (req, res) => {
   try {
     const { nama, deskripsi, status, image_url } = req.body;
@@ -116,10 +107,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// =====================================
-// DELETE: Menghapus modul
-// URL: DELETE /api/modul/:id
-// =====================================
+
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;

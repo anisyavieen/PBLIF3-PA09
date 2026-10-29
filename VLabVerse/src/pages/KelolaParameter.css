@@ -1,0 +1,124 @@
+.kp-page {
+  --kp-blue: #2557e8;
+  --kp-blue-dark: #1e47c4;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Header */
+.kp-head { display: flex; flex-direction: column; gap: 14px; }
+.kp-title { margin: 0; font-size: 28px; font-weight: 700; }
+.kp-sub { margin: 6px 0 0; font-size: 14px; color: #4b5563; }
+.kp-status { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #4b5563; }
+
+/* Status berbentuk pil, sama seperti di Daftar Modul */
+.kp-pill.MuiInputBase-root { border-radius: 999px; font-size: 13px; font-weight: 600; }
+.kp-pill .MuiSelect-select.MuiSelect-select { padding: 3px 30px 3px 14px; }
+.kp-pill .MuiSelect-icon { color: inherit; }
+.kp-pill-on.MuiInputBase-root { background: #e8f8ee; color: #15803d; }
+.kp-pill-on .MuiOutlinedInput-notchedOutline { border-color: #86d4a0; }
+.kp-pill-off.MuiInputBase-root { background: #f1f5f9; color: #475569; }
+.kp-pill-off .MuiOutlinedInput-notchedOutline { border-color: #cbd5e1; }
+
+/* Kartu */
+.kp-card {
+  background: #fff;
+  border: 1px solid #e2e5ea;
+  border-radius: 10px;
+  padding: 24px;
+}
+.kp-card-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.kp-card-title { margin: 0; font-size: 18px; font-weight: 600; }
+.kp-card-desc { margin: 6px 0 12px; font-size: 13px; color: #4b5563; }
+
+/* Chip jenis propelan */
+.kp-chips { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+
+/* Header kolom & baris parameter */
+.kp-cols,
+.kp-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.kp-cols {
+  padding: 8px 0;
+  border-bottom: 1px solid #e2e5ea;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+}
+.kp-cols-name { flex: 1 1 240px; }
+.kp-cols-nums { display: flex; gap: 10px; }
+.kp-cols-nums span { width: 96px; }
+.kp-cols-tools { width: 68px; }
+
+.kp-row { padding: 14px 0; border-bottom: 1px solid #eef0f3; }
+.kp-row-info { flex: 1 1 240px; min-width: 0; }
+.kp-row-name { font-size: 15px; font-weight: 600; }
+.kp-row-desc { font-size: 12.5px; color: #4b5563; margin-top: 3px; }
+.kp-nums { display: flex; gap: 10px; }
+.kp-num { width: 96px; }
+.kp-tools { display: flex; gap: 4px; width: 68px; }
+.kp-num .MuiOutlinedInput-root { border-radius: 8px; }
+
+.kp-empty { padding: 16px 0; font-size: 13px; color: #4b5563; }
+.kp-add-row { padding-top: 16px; }
+
+/* ---------- Tombol: samakan dengan Daftar Modul ---------- */
+.kp-page .MuiButton-root {
+  text-transform: none;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: none;
+}
+.kp-page .MuiButton-outlined {
+  color: var(--kp-blue);
+  border-color: var(--kp-blue);
+  background: #fff;
+}
+.kp-page .MuiButton-outlined:hover { background: #eef3ff; border-color: var(--kp-blue); }
+.kp-page .MuiButton-contained { background: var(--kp-blue); color: #fff; }
+.kp-page .MuiButton-contained:hover { background: var(--kp-blue-dark); }
+
+.kp-add-group.MuiButton-root { padding: 12px; font-size: 15px; }
+
+/* Footer */
+.kp-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.kp-footer-right { display: flex; gap: 10px; }
+.kp-page .kp-back.MuiButton-root { background: #111827; color: #fff; }
+.kp-page .kp-back.MuiButton-root:hover { background: #000; }
+.kp-page .kp-cancel.MuiButton-root { color: #111827; border-color: #111827; }
+.kp-page .kp-cancel.MuiButton-root:hover { background: #f3f4f6; border-color: #111827; }
+
+@media (max-width: 600px) {
+  .kp-card { padding: 16px; }
+}
+
+/* ---------- Tambahan: satuan, pesan error, penanda belum disimpan ---------- */
+.kp-row-unit {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 11.5px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+.kp-row-error { flex-basis: 100%; color: #d32f2f; font-size: 12.5px; }
+.kp-card-hint { margin: 0 0 12px; font-size: 13px; color: #4b5563; }
+.kp-dirty { align-self: center; font-size: 12.5px; color: #b45309; }
+.kp-footer-right { align-items: center; }
+
+/* Penanda jenis propelan yang sedang diatur */
+.kp-jenis-badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #e8eefc;
+  color: #1e3a8a;
+  font-size: 12px;
+  font-weight: 600;
+  vertical-align: middle;
+}
