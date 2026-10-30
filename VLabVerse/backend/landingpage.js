@@ -1,14 +1,22 @@
-
 const express = require("express");
 const router = express.Router();
 const pool = require("./db");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+const {
+  autentikasi,
+  khususAdmin,
+} = require("./middleware");
+
+// Pastikan folder upload tersedia
+const uploadDir = path.join(__dirname, "uploads");
+fs.mkdirSync(uploadDir, { recursive: true });
 
 // Konfigurasi penyimpanan foto
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "uploads"));
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     const namaFile = Date.now() + path.extname(file.originalname);
@@ -28,7 +36,7 @@ const upload = multer({
   },
 });
 
-// GET: Menampilkan semua konten landing page
+// GET: Publik boleh melihat konten landing page
 router.get("/", async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -38,14 +46,15 @@ router.get("/", async (req, res) => {
     res.json(rows);
   } catch (error) {
     console.error("Gagal mengambil konten landing page:", error.message);
+
     res.status(500).json({
       message: "Gagal mengambil konten landing page.",
     });
   }
 });
 
-// POST: Menambahkan konten landing page
-router.post("/", async (req, res) => {
+// POST: Admin aktif menambahkan konten
+router.post("/", autentikasi, khususAdmin, async (req, res) => {
   try {
     const {
       section_key,
@@ -95,8 +104,8 @@ router.post("/", async (req, res) => {
   }
 });
 
-// PUT: Mengedit konten berdasarkan ID
-router.put("/:id", async (req, res) => {
+// PUT: Admin aktif mengedit konten
+router.put("/:id", autentikasi, khususAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -158,8 +167,8 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// DELETE: Menghapus konten berdasarkan ID
-router.delete("/:id", async (req, res) => {
+// DELETE: Admin aktif menghapus konten
+router.delete("/:id", autentikasi, khususAdmin, async (req, res) => {
   try {
     const [result] = await pool.query(
       "DELETE FROM landing_page_contents WHERE id = ?",
@@ -177,32 +186,38 @@ router.delete("/:id", async (req, res) => {
     });
   } catch (error) {
     console.error("Gagal menghapus konten:", error.message);
+
     res.status(500).json({
       message: "Gagal menghapus konten landing page.",
     });
   }
 });
 
-// POST: Upload foto Hero
-router.post("/upload", (req, res) => {
-  upload.single("gambar")(req, res, (error) => {
-    if (error) {
-      return res.status(400).json({
-        message: error.message || "Gagal mengunggah foto.",
-      });
-    }
+// POST: Admin aktif mengunggah foto Hero
+router.post(
+  "/upload",
+  autentikasi,
+  khususAdmin,
+  (req, res) => {
+    upload.single("gambar")(req, res, (error) => {
+      if (error) {
+        return res.status(400).json({
+          message: error.message || "Gagal mengunggah foto.",
+        });
+      }
 
-    if (!req.file) {
-      return res.status(400).json({
-        message: "Pilih foto terlebih dahulu.",
-      });
-    }
+      if (!req.file) {
+        return res.status(400).json({
+          message: "Pilih foto terlebih dahulu.",
+        });
+      }
 
-    res.json({
-      message: "Foto berhasil diunggah.",
-      image_url: `/uploads/${req.file.filename}`,
+      res.json({
+        message: "Foto berhasil diunggah.",
+        image_url: `/uploads/${req.file.filename}`,
+      });
     });
-  });
-});
+  }
+);
 
 module.exports = router;
