@@ -10,6 +10,7 @@ import './App.css'
 import LandingPageAdmin from './pages/LandingPageAdmin.jsx'
 import UjiCoba from './pages/UjiCoba.jsx'
 import KelolaParameter from './pages/KelolaParameter.jsx'
+import HasilSimulasi from './pages/HasilSimulasi.jsx'
 
 
 function DashboardHome() {
@@ -34,9 +35,6 @@ function DashboardHome() {
 
 // Landingpage Admin
 
-function HasilRiwayat() {
-  return null
-}
 
 export default function App() {
   return (
@@ -72,7 +70,7 @@ export default function App() {
 
           <Route
             path="riwayat"
-            element={<HasilRiwayat />}
+            element={<HasilSimulasi />}
           />
         </Route>
 

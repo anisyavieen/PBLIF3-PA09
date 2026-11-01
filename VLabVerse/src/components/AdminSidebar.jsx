@@ -19,7 +19,7 @@ const MENU_ITEMS = [
   },
   {
     to: '/dashboard/riwayat',
-    label: 'Hasil Riwayat',
+    label: 'Hasil Simulasi',
     icon: <HistoryOutlinedIcon />,
   },
 ]

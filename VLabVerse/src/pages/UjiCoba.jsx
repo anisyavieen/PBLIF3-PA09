@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react' // BARU: tambah useRef
 import { MenuItem, Select } from '@mui/material'
 import Navbar from '../components/Navbar.jsx'
+import { simpanHasilSimulasi } from '../components/RiwayatSimulasi.jsx' // BARU
 import './UjiCoba.css'
 
 const DEFAULTS = {
@@ -24,6 +25,9 @@ export default function UjiCoba() {
   const [running, setRunning] = useState(false)
   const [elapsed, setElapsed] = useState(0)
   const [showResult, setShowResult] = useState(false)
+
+  // BARU: penanda supaya satu simulasi hanya tersimpan satu kali ke riwayat
+  const sudahDisimpan = useRef(false)
 
   // Model sederhana: r = a × P^n.
   // Koefisien harus sesuai satuan dan model propelan yang digunakan.
@@ -54,6 +58,26 @@ export default function UjiCoba() {
     return () => window.clearInterval(timer)
   }, [running, burnRate, params.web])
 
+  // BARU: simpan ke riwayat (dibaca halaman admin "Hasil Simulasi")
+  // begitu pembakaran selesai sampai propelan habis.
+  useEffect(() => {
+    const selesai = !running && elapsed > 0 && progress >= 0.999
+    if (!selesai || sudahDisimpan.current) return
+
+    sudahDisimpan.current = true
+    simpanHasilSimulasi({
+      modul: 'Laju Bakar',
+      jenis: params.propellant,
+      a: params.coefficient,
+      n: params.exponent,
+      rho: params.density,
+      pc: params.pressure,
+      ab: params.area,
+      wb: params.web,
+      hasil: burnRate,
+    })
+  }, [running, elapsed, progress, params, burnRate])
+
   function updateParam(name, value) {
     setParams((previous) => ({
       ...previous,
@@ -63,11 +87,13 @@ export default function UjiCoba() {
 
   function startSimulation() {
     if (remaining <= 0) return
+    sudahDisimpan.current = false // BARU
     setShowResult(false)
     setRunning(true)
   }
 
   function resetSimulation() {
+    sudahDisimpan.current = false // BARU
     setRunning(false)
     setElapsed(0)
     setShowResult(false)
