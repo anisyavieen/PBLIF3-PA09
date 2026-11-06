@@ -175,7 +175,7 @@ export default function UjiCoba() {
                     propellant: item,
                   }))
                 }
-                disabled={running}
+                disabled={true}
               >
                 {item}
               </button>

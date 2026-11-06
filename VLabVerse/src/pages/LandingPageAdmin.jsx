@@ -35,12 +35,17 @@ const defaultData = {
   },
 }
 
+
 async function requestAPI(url, options = {}) {
+  const token = localStorage.getItem('token')
+
   const response = await fetch(url, {
+    ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
     },
-    ...options,
   })
 
   const data = await response.json()
@@ -156,10 +161,17 @@ export default function LandingPageAdmin() {
   try {
     setPesan('Mengunggah foto...')
 
+    
+    const token = localStorage.getItem('token')
+
     const response = await fetch(`${API_URL}/upload`, {
       method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       body: formData,
     })
+
 
     const data = await response.json()
 
@@ -285,14 +297,14 @@ export default function LandingPageAdmin() {
   return (
     <main className="landing-admin">
       <header className="landing-admin-header">
-        <h1>LANDING PAGE</h1>
+        <h1>Kelola Konten Halaman Utama</h1>
         <p>
           Edit konten utama, fitur, langkah penggunaan, dan informasi
-          kontak landing page V-LabVerse.
+          kontak halaman utama V-LabVerse.
         </p>
         <p className="landing-admin-note">
           Perubahan disimpan ke database dan dapat ditampilkan di
-          landing page pengguna setelah halaman publik dihubungkan ke API.
+          halaman utama pengguna setelah halaman publik dihubungkan ke API.
         </p>
       </header>
 

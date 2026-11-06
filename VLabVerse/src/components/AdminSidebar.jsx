@@ -9,12 +9,12 @@ import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined'
 const MENU_ITEMS = [
   {
     to: '/dashboard/landingpage',
-    label: 'Data Content',
+    label: 'Kelola Konten',
     icon: <HomeOutlinedIcon />,
   },
   {
     to: '/dashboard/modul',
-    label: 'Data Modul',
+    label: 'Kelola Modul',
     icon: <ScienceOutlinedIcon />,
   },
   {
@@ -89,7 +89,7 @@ function AdminSidebar({ open = false, onClose }) {
             onClick={handleLogout}
           >
             <LogoutOutlinedIcon />
-            <span>Logout</span>
+            <span>Keluar</span>
           </button>
         </div>
       </aside>
