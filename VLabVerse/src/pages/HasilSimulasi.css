@@ -1,0 +1,84 @@
+.hs-page {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Header (sama dengan Kelola Parameter) */
+.hs-title { margin: 0; font-size: 28px; font-weight: 700; }
+.hs-sub { margin: 6px 0 0; font-size: 14px; color: #4b5563; }
+
+/* Filter */
+.hs-filter { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.hs-select.MuiInputBase-root {
+  min-width: 180px;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+}
+
+.hs-date .MuiOutlinedInput-root {
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+}
+
+/* Tabel */
+.hs-table-wrap {
+  border: 1px solid #e2e5ea;
+  border-radius: 10px;
+  overflow-x: auto;
+  background: #fff;
+}
+
+.hs-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.hs-table thead th {
+  background: #0f172a;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 14px 12px;
+  border-right: 1px solid #334155;
+  white-space: nowrap;
+}
+.hs-table thead th:last-child { border-right: none; }
+
+.hs-table tbody td {
+  padding: 16px 12px;
+  color: #0f172a;
+  border-right: 1px solid #e2e5ea;
+  border-bottom: 1px solid #eef0f3;
+}
+.hs-table tbody td:last-child { border-right: none; }
+.hs-table tbody tr:last-child td { border-bottom: none; }
+.hs-table tbody tr:nth-child(even) td { background: #f8fafc; }
+.hs-table tbody tr:hover td { background: #f1f5f9; }
+
+.hs-table .hs-empty {
+  padding: 32px 12px;
+  color: #4b5563;
+  font-weight: 400;
+}
+
+/* Tombol "Lihat CSV" */
+.hs-csv {
+  padding: 4px 6px;
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.hs-csv:hover { color: #b91c1c; text-decoration: underline; }
+.hs-csv:focus-visible { outline: 2px solid #93c5fd; outline-offset: 2px; }

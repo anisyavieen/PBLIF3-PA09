@@ -34,7 +34,7 @@ export default function Navbar() {
       <a href="/#cara-kerja">Cara Kerja</a>
       <a href="/#kontak">Kontak</a>
       <a href="/login" className="vlab-login">
-        Login
+        Masuk
       </a>
     </div>
     </nav>

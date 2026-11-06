@@ -1,42 +1,13 @@
-
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const pool = require("./db");
+const {
+  autentikasi,
+  khususSuperAdmin,
+} = require("./middleware");
 
 const router = express.Router();
-
-// Middleware untuk memeriksa token login
-function autentikasi(req, res, next) {
-  const header = req.headers.authorization;
-
-  if (!header || !header.startsWith("Bearer ")) {
-    return res.status(401).json({
-      message: "Token tidak ditemukan. Silakan login kembali.",
-    });
-  }
-
-  try {
-    const token = header.split(" ")[1];
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
-    next();
-  } catch (error) {
-    return res.status(401).json({
-      message: "Token tidak valid atau sudah kedaluwarsa.",
-    });
-  }
-}
-
-// Middleware khusus super admin
-function khususSuperAdmin(req, res, next) {
-  if (req.user.role !== "super_admin") {
-    return res.status(403).json({
-      message: "Akses hanya untuk Super Admin.",
-    });
-  }
-
-  next();
-}
 
 // LOGIN
 router.post("/login", async (req, res) => {
@@ -50,8 +21,9 @@ router.post("/login", async (req, res) => {
     }
 
     const [users] = await pool.execute(
-      `SELECT id, nama, email, password, role
-       FROM users WHERE email = ?`,
+      `SELECT id, nama, email, password, role, status
+       FROM users
+       WHERE email = ?`,
       [email.trim()]
     );
 
@@ -70,8 +42,15 @@ router.post("/login", async (req, res) => {
       });
     }
 
+    if (user.status !== "aktif") {
+      return res.status(403).json({
+        message: "Akun Anda sudah dinonaktifkan. Silakan hubungi Super Admin.",
+        code: "ACCOUNT_INACTIVE",
+      });
+    }
+
     const token = jwt.sign(
-      { id: user.id, role: user.role },
+      { id: user.id },
       process.env.JWT_SECRET,
       { expiresIn: "2h" }
     );
@@ -84,10 +63,12 @@ router.post("/login", async (req, res) => {
         nama: user.nama,
         email: user.email,
         role: user.role,
+        status: user.status,
       },
     });
   } catch (error) {
     console.error("Login gagal:", error);
+
     return res.status(500).json({
       message: "Terjadi kesalahan pada server.",
     });
@@ -102,7 +83,7 @@ router.get(
   async (req, res) => {
     try {
       const [admins] = await pool.execute(
-        `SELECT id, nama, email, role
+        `SELECT id, nama, email, role, status
          FROM users
          WHERE role = 'admin'
          ORDER BY id DESC`
@@ -111,6 +92,7 @@ router.get(
       res.json(admins);
     } catch (error) {
       console.error("Gagal mengambil admin:", error);
+
       res.status(500).json({
         message: "Gagal mengambil data admin.",
       });
@@ -139,6 +121,15 @@ router.post(
         });
       }
 
+      if (
+        status !== undefined &&
+        !["aktif", "nonaktif"].includes(status)
+      ) {
+        return res.status(400).json({
+          message: "Status harus aktif atau nonaktif.",
+        });
+      }
+
       const [existing] = await pool.execute(
         "SELECT id FROM users WHERE email = ?",
         [email.trim()]
@@ -150,12 +141,13 @@ router.post(
         });
       }
 
+      const statusAkun = status || "aktif";
       const hash = await bcrypt.hash(password, 12);
 
       const [result] = await pool.execute(
-        `INSERT INTO users (nama, email, password, role)
-         VALUES (?, ?, ?, 'admin')`,
-        [nama.trim(), email.trim(), hash]
+        `INSERT INTO users (nama, email, password, role, status)
+         VALUES (?, ?, ?, 'admin', ?)`,
+        [nama.trim(), email.trim(), hash, statusAkun]
       );
 
       res.status(201).json({
@@ -164,6 +156,7 @@ router.post(
       });
     } catch (error) {
       console.error("Gagal menambahkan admin:", error);
+
       res.status(500).json({
         message: "Gagal menambahkan akun admin.",
       });
@@ -179,11 +172,17 @@ router.put(
   async (req, res) => {
     try {
       const { id } = req.params;
-      const { nama, email, password } = req.body;
+      const { nama, email, password, status } = req.body;
 
       if (!nama?.trim() || !email?.trim()) {
         return res.status(400).json({
           message: "Nama dan email wajib diisi.",
+        });
+      }
+
+      if (!["aktif", "nonaktif"].includes(status)) {
+        return res.status(400).json({
+          message: "Status harus aktif atau nonaktif.",
         });
       }
 
@@ -220,16 +219,16 @@ router.put(
 
         await pool.execute(
           `UPDATE users
-           SET nama = ?, email = ?, password = ?
+           SET nama = ?, email = ?, password = ?, status = ?
            WHERE id = ? AND role = 'admin'`,
-          [nama.trim(), email.trim(), hash, id]
+          [nama.trim(), email.trim(), hash, status, id]
         );
       } else {
         await pool.execute(
           `UPDATE users
-           SET nama = ?, email = ?
+           SET nama = ?, email = ?, status = ?
            WHERE id = ? AND role = 'admin'`,
-          [nama.trim(), email.trim(), id]
+          [nama.trim(), email.trim(), status, id]
         );
       }
 
@@ -238,6 +237,7 @@ router.put(
       });
     } catch (error) {
       console.error("Gagal mengedit admin:", error);
+
       res.status(500).json({
         message: "Gagal memperbarui akun admin.",
       });
@@ -270,6 +270,7 @@ router.delete(
       });
     } catch (error) {
       console.error("Gagal menghapus admin:", error);
+
       res.status(500).json({
         message: "Gagal menghapus akun admin.",
       });
