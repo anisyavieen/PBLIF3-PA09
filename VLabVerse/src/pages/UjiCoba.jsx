@@ -3,6 +3,8 @@ import { MenuItem, Select } from '@mui/material'
 import Navbar from '../components/Navbar.jsx'
 import { simpanHasilSimulasi } from '../components/RiwayatSimulasi.jsx' // BARU
 import './UjiCoba.css'
+import PopUpHasilSimulasi from "../components/PopUpHasilSimulasi";
+
 
 const DEFAULTS = {
   propellant: 'KNSB',
@@ -26,6 +28,8 @@ export default function UjiCoba() {
   const [elapsed, setElapsed] = useState(0)
   const [showResult, setShowResult] = useState(false)
 
+  const [showPopup, setShowPopup] = useState(false)
+
   // BARU: penanda supaya satu simulasi hanya tersimpan satu kali ke riwayat
   const sudahDisimpan = useRef(false)
 
@@ -39,6 +43,7 @@ export default function UjiCoba() {
   const consumed = Math.min(params.web, burnRate * visualTime)
   const remaining = Math.max(0, params.web - consumed)
   const progress = params.web > 0 ? consumed / params.web : 0
+  
 
   useEffect(() => {
     if (!running) return undefined
@@ -61,23 +66,30 @@ export default function UjiCoba() {
   // BARU: simpan ke riwayat (dibaca halaman admin "Hasil Simulasi")
   // begitu pembakaran selesai sampai propelan habis.
   useEffect(() => {
-    const selesai = !running && elapsed > 0 && progress >= 0.999
-    if (!selesai || sudahDisimpan.current) return
+  const selesai = !running && elapsed > 0 && progress >= 0.999;
 
-    sudahDisimpan.current = true
-    simpanHasilSimulasi({
-      modul: 'Laju Bakar',
-      jenis: params.propellant,
-      a: params.coefficient,
-      n: params.exponent,
-      rho: params.density,
-      pc: params.pressure,
-      ab: params.area,
-      wb: params.web,
-      hasil: burnRate,
-    })
-  }, [running, elapsed, progress, params, burnRate])
+  if (!selesai) return;
 
+  // Tampilkan popup secara otomatis
+  setShowPopup(true);
+
+  // Simpan hasil hanya satu kali
+  if (sudahDisimpan.current) return;
+
+  sudahDisimpan.current = true;
+
+  simpanHasilSimulasi({
+    modul: 'Laju Bakar',
+    jenis: params.propellant,
+    a: params.coefficient,
+    n: params.exponent,
+    rho: params.density,
+    pc: params.pressure,
+    ab: params.area,
+    wb: params.web,
+    hasil: burnRate,
+  });
+}, [running, elapsed, progress, params, burnRate]);
   function updateParam(name, value) {
     setParams((previous) => ({
       ...previous,
@@ -87,8 +99,10 @@ export default function UjiCoba() {
 
   function startSimulation() {
     if (remaining <= 0) return
-    sudahDisimpan.current = false // BARU
+
+    sudahDisimpan.current = false
     setShowResult(false)
+    setShowPopup(false)
     setRunning(true)
   }
 
@@ -97,6 +111,20 @@ export default function UjiCoba() {
     setRunning(false)
     setElapsed(0)
     setShowResult(false)
+    setShowPopup(false);
+  }
+
+  const dataHasilSimulasi = {
+    jenisPropelan: params.propellant,
+    koefisien: params.coefficient,
+    eksponenTekanan: params.exponent,
+    massaJenis: `${format(params.density, 0)} kg/m³`,
+    tekanan: `${format(params.pressure, 1)} MPa`,
+    luasPermukaanBakar: `${format(params.area, 0)} cm²`,
+    tebalPropelan: `${format(params.web, 1)} mm`,
+    waktuPembakaran: `${format(elapsed, 3)} s`,
+    lajuBakar: `${format(burnRate, 2)} mm/s`,
+    progresPembakaran: `${format(progress * 100, 1)}%`
   }
 
   return (
@@ -248,9 +276,14 @@ export default function UjiCoba() {
           </button>
           <button
             className="btn-result"
-            onClick={() => setShowResult((previous) => !previous)}
+            onClick={() => {
+              if (!running && elapsed > 0 && progress >= 0.999) {
+                setShowPopup(true)
+              }
+            }}
+            disabled={running || progress < 0.999}
           >
-            {showResult ? 'Tutup hasil' : 'Lihat hasil'}
+            Lihat hasil
           </button>
         </div>
 
@@ -360,6 +393,11 @@ export default function UjiCoba() {
             </button>
           </section>
         )}
+        <PopUpHasilSimulasi
+          open={showPopup}
+          onClose={() => setShowPopup(false)}
+          hasilSimulasi={dataHasilSimulasi}
+        />
       </main>
     </div>
   )
