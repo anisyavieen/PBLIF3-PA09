@@ -19,32 +19,45 @@ const DEFAULTS = {
 const STORAGE_KEY = 'vlab_laju_bakar'
 
 // Membaca data propelan dari KelolaParameter
+
 function bacaDataPropelan() {
   try {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
 
     if (!data || !Array.isArray(data.types)) {
-      return { types: [], params: {} }
+      return { types: [], params: {}, batas: {} }
     }
 
-    const parameter = data.groups?.[0]?.params || []
+    // Ambil keenam parameter dari seluruh grup
+    const parameter = (data.groups || []).flatMap(
+      (group) => group.params || []
+    )
 
     const hasil = {}
+    const batas = {}
+
+    parameter.forEach((p) => {
+      if (!p.kode) return
+
+      batas[p.kode] = {
+        min: Number(String(p.min).replace(',', '.')),
+        max: Number(String(p.max).replace(',', '.')),
+      }
+    })
 
     data.types.forEach((jenis) => {
       const nilai = {}
 
       parameter.forEach((p) => {
-        const kode = p.kode
-        const value = jenis.vals?.[p.id]
+        if (!p.kode) return
 
-        if (kode) {
-          nilai[kode] = Number(
-            value !== undefined && String(value).trim() !== ''
-              ? value
-              : p.def
-          )
-        }
+        const value = jenis.vals?.[p.id]
+        const angka =
+          value !== undefined && String(value).trim() !== ''
+            ? value
+            : p.def
+
+        nilai[p.kode] = Number(String(angka).replace(',', '.'))
       })
 
       hasil[jenis.name] = nilai
@@ -53,12 +66,14 @@ function bacaDataPropelan() {
     return {
       types: data.types,
       params: hasil,
+      batas,
     }
   } catch (error) {
     console.error('Gagal membaca data propelan:', error)
-    return { types: [], params: {} }
+    return { types: [], params: {}, batas: {} }
   }
 }
+
 
 const format = (number, digits = 2) =>
   number.toLocaleString('id-ID', {
@@ -71,6 +86,8 @@ export default function UjiCoba() {
   const [running, setRunning] = useState(false)
   const [elapsed, setElapsed] = useState(0)
   const [dataPropelan, setDataPropelan] = useState(bacaDataPropelan)
+  const [modules, setModules] = useState([])
+  const [selectedModule, setSelectedModule] = useState('')
   const [showResult, setShowResult] = useState(false)
 
   const [showPopup, setShowPopup] = useState(false)
@@ -88,7 +105,13 @@ export default function UjiCoba() {
   const consumed = Math.min(params.web, burnRate * visualTime)
   const remaining = Math.max(0, params.web - consumed)
   const progress = params.web > 0 ? consumed / params.web : 0
-  
+  const batas = dataPropelan.batas
+
+  const ambilBatas = (kode, jenis) =>
+    batas[kode]?.[jenis] ?? DEFAULTS[
+      { a: 'coefficient', n: 'exponent', rho: 'density',
+        pc: 'pressure', ab: 'area', wb: 'web' }[kode]
+    ]
 
   useEffect(() => {
     if (!running) return undefined
@@ -109,18 +132,76 @@ export default function UjiCoba() {
   }, [running, burnRate, params.web])
 
   useEffect(() => {
+    async function loadModules() {
+      try {
+        const response = await fetch('http://localhost:3000/api/modul')
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Gagal mengambil data modul.')
+        }
+
+        const activeModules = data.filter((item) => {
+          const status = item.status
+
+          return (
+            status === true ||
+            status === 1 ||
+            ['aktif', 'active'].includes(String(status).toLowerCase())
+          )
+        })
+
+        setModules(activeModules)
+
+        const defaultModule =
+          activeModules.find(
+            (item) =>
+              (item.nama ?? item.name ?? '').toLowerCase() === 'laju bakar'
+          ) || activeModules[0]
+
+        setSelectedModule(
+          defaultModule ? String(defaultModule.id ?? defaultModule._id) : ''
+        )
+      } catch (error) {
+        console.error('Gagal memuat modul:', error)
+      }
+    }
+
+    loadModules()
+  }, [])      
+
+  useEffect(() => {
     const perbaruiData = () => {
       setDataPropelan(bacaDataPropelan())
     }
 
     window.addEventListener('storage', perbaruiData)
     window.addEventListener('focus', perbaruiData)
+    window.addEventListener('vlab-propelan-updated', perbaruiData)
 
     return () => {
       window.removeEventListener('storage', perbaruiData)
       window.removeEventListener('focus', perbaruiData)
+      window.removeEventListener('vlab-propelan-updated', perbaruiData)
     }
   }, [])
+
+
+  useEffect(() => {
+    const nilai = dataPropelan.params[params.propellant]
+
+    if (!nilai) return
+
+    setParams((previous) => ({
+      ...previous,
+      coefficient: nilai.a ?? previous.coefficient,
+      exponent: nilai.n ?? previous.exponent,
+      density: nilai.rho ?? previous.density,
+      pressure: nilai.pc ?? previous.pressure,
+      area: nilai.ab ?? previous.area,
+      web: nilai.wb ?? previous.web,
+    }))
+  }, [dataPropelan])
 
   // simpan ke riwayat (dibaca halaman admin "Hasil Simulasi")
   // begitu pembakaran selesai sampai propelan habis.
@@ -192,30 +273,35 @@ export default function UjiCoba() {
 
       <main className="uji-main">
         <div className="module-select-wrap">
-          <Select
-            size="small"
-            value="laju-bakar"
-            className="module-select"
-            aria-label="Pilih modul simulasi"
-            MenuProps={{
-              PaperProps: {
-                sx: {
-                  borderRadius: '8px',
-                  mt: 0.5,
-                  boxShadow: '0 4px 14px rgba(23, 32, 51, 0.12)',
-                  '& .MuiMenuItem-root': {
-                    fontSize: '13px',
-                    minHeight: '38px',
-                  },
-                },
-              },
-            }}
-          >
-            <MenuItem value="laju-bakar">
-              Modul Laju Bakar
+        <Select
+          size="small"
+          value={selectedModule}
+          onChange={(event) => setSelectedModule(event.target.value)}
+          className="module-select"
+          aria-label="Pilih modul simulasi"
+          displayEmpty
+          MenuProps={{
+            PaperProps: {
+              className: 'module-menu-paper',
+            },
+          }}
+        >
+          {modules.length > 0 ? (
+            modules.map((item) => (
+              <MenuItem
+                key={item.id ?? item._id}
+                value={String(item.id ?? item._id)}
+              >
+                Modul {item.nama ?? item.name}
+              </MenuItem>
+            ))
+          ) : (
+            <MenuItem value="" disabled>
+              Belum ada modul aktif
             </MenuItem>
-          </Select>
-        </div>
+          )}
+        </Select>
+      </div>
 
         <section className="parameter-section">
           <h2><span>⚙</span> PARAMETER PROPELAN</h2>
@@ -252,83 +338,83 @@ export default function UjiCoba() {
         </div>
 
           <div className="parameter-list">
-            <Parameter
-              label="Koefisien laju bakar (a)"
-              value={params.coefficient}
-              display={format(params.coefficient)}
-              description="Koefisien dalam model laju bakar."
-              min="0.1"
-              max="10"
-              step="0.1"
-              onChange={(value) => updateParam('coefficient', value)}
-              disabled={running}
-            />
+        <Parameter
+          label="Koefisien laju bakar (a)"
+          value={params.coefficient}
+          display={format(params.coefficient)}
+          description="Koefisien dalam model laju bakar."
+          min={ambilBatas('a', 'min')}
+          max={ambilBatas('a', 'max')}
+          step="0.1"
+          onChange={(value) => updateParam('coefficient', value)}
+          disabled={running}
+        />
 
-            <Parameter
-              label="Eksponen tekanan (n)"
-              value={params.exponent}
-              display={format(params.exponent, 3)}
-              description="Menentukan pengaruh tekanan pada model."
-              min="0.1"
-              max="1"
-              step="0.01"
-              onChange={(value) => updateParam('exponent', value)}
-              disabled={running}
-            />
+        <Parameter
+          label="Eksponen tekanan (n)"
+          value={params.exponent}
+          display={format(params.exponent, 3)}
+          description="Menentukan pengaruh tekanan pada model."
+          min={ambilBatas('n', 'min')}
+          max={ambilBatas('n', 'max')}
+          step="0.01"
+          onChange={(value) => updateParam('exponent', value)}
+          disabled={running}
+        />
 
-            <Parameter
-              label="Massa jenis (ρ)"
-              value={params.density}
-              display={`${format(params.density, 0)} kg/m³`}
-              description="Massa jenis propelan yang digunakan."
-              min="500"
-              max="2500"
-              step="50"
-              onChange={(value) => updateParam('density', value)}
-              disabled={running}
-            />
-          </div>
-        </section>
+        <Parameter
+          label="Massa jenis (ρ)"
+          value={params.density}
+          display={`${format(params.density, 0)} kg/m³`}
+          description="Massa jenis propelan yang digunakan."
+          min={ambilBatas('rho', 'min')}
+          max={ambilBatas('rho', 'max')}
+          step="50"
+          onChange={(value) => updateParam('density', value)}
+          disabled={running}
+        />
+      </div>
+      </section>
 
-        <section className="condition-section">
-          <h2>Kondisi Pembakaran</h2>
+      <section className="condition-section">
+        <h2>Kondisi Pembakaran</h2>
 
-          <div className="parameter-list">
-            <Parameter
-              label="Tekanan ruang bakar (Pc)"
-              value={params.pressure}
-              display={`${format(params.pressure, 1)} MPa`}
-              description="Tekanan yang digunakan dalam model."
-              min="0.5"
-              max="10"
-              step="0.1"
-              onChange={(value) => updateParam('pressure', value)}
-              disabled={running}
-            />
+        <div className="parameter-list">
+          <Parameter
+            label="Tekanan ruang bakar (Pc)"
+            value={params.pressure}
+            display={`${format(params.pressure, 1)} MPa`}
+            description="Tekanan yang digunakan dalam model."
+            min={ambilBatas('pc', 'min')}
+            max={ambilBatas('pc', 'max')}
+            step="0.1"
+            onChange={(value) => updateParam('pressure', value)}
+            disabled={running}
+          />
 
-            <Parameter
-              label="Luas permukaan bakar (Ab)"
-              value={params.area}
-              display={`${format(params.area, 0)} cm²`}
-              description="Luas permukaan pembakaran propelan."
-              min="10"
-              max="500"
-              step="10"
-              onChange={(value) => updateParam('area', value)}
-              disabled={running}
-            />
+          <Parameter
+            label="Luas permukaan bakar (Ab)"
+            value={params.area}
+            display={`${format(params.area, 0)} cm²`}
+            description="Luas permukaan pembakaran propelan."
+            min={ambilBatas('ab', 'min')}
+            max={ambilBatas('ab', 'max')}
+            step="10"
+            onChange={(value) => updateParam('area', value)}
+            disabled={running}
+          />
 
-            <Parameter
-              label="Tebal propelan (Wb)"
-              value={params.web}
-              display={`${format(params.web, 1)} mm`}
-              description="Jarak pembakaran yang dimodelkan."
-              min="1"
-              max="30"
-              step="0.5"
-              onChange={(value) => updateParam('web', value)}
-              disabled={running}
-            />
+          <Parameter
+            label="Tebal propelan (Wb)"
+            value={params.web}
+            display={`${format(params.web, 1)} mm`}
+            description="Jarak pembakaran yang dimodelkan."
+            min={ambilBatas('wb', 'min')}
+            max={ambilBatas('wb', 'max')}
+            step="0.5"
+            onChange={(value) => updateParam('web', value)}
+            disabled={running}
+          />
           </div>
         </section>
 

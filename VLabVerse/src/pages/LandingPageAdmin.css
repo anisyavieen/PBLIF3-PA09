@@ -1,14 +1,16 @@
 .landing-admin {
+  width: 100%;
   min-height: 100vh;
-  padding: 24px;
+  padding: 24px 0px;
+  box-sizing: border-box;
   background: #f7f9fc;
   color: #111827;
   font-family: Arial, sans-serif;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .landing-admin-header {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .landing-admin-header h1 {
@@ -22,6 +24,7 @@
   margin: 3px 0;
   color: #374151;
   line-height: 1.5;
+  font-size: 14px;
 }
 
 .landing-admin-note {

@@ -97,6 +97,17 @@
   color: #64748b;
 }
 
+.module-menu-paper {
+  border-radius: 8px !important;
+  margin-top: 4px;
+  box-shadow: 0 4px 14px rgba(23, 32, 51, 0.12) !important;
+}
+
+.module-menu-paper .MuiMenuItem-root {
+  font-size: 13px;
+  min-height: 38px;
+}
+
 .parameter-section h2,
 .burn-section h2 {
   font-size: 17px;
