@@ -11,6 +11,7 @@ import LandingPageAdmin from './pages/LandingPageAdmin.jsx'
 import UjiCoba from './pages/UjiCoba.jsx'
 import KelolaParameter from './pages/KelolaParameter.jsx'
 import HasilSimulasi from './pages/HasilSimulasi.jsx'
+import KelolaModulBaruComingSoon from './pages/KelolaModulBaruComingSoon.jsx'
 
 
 function DashboardHome() {
@@ -66,6 +67,11 @@ export default function App() {
           <Route
             path="modul/:id/kelola"
             element={<KelolaParameter />}
+          />
+
+          <Route
+            path="modul/:id/kelola-baru"
+            element={<KelolaModulBaruComingSoon />}
           />
 
           <Route

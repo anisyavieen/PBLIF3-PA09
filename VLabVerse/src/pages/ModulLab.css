@@ -1,10 +1,51 @@
+
+.modul-page {
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  padding: 24px 0;
+  box-sizing: border-box;
+  background: #f7f9fc;
+  color: #111827;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+/* Header */
+.modul-header {
+  margin-bottom: 20px;
+}
+
+.modul-header h1 {
+  margin: 0 0 8px;
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.modul-header p {
+  max-width: 650px;
+  margin: 3px 0;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Daftar modul */
+.modul-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 24px;
+}
+
 .module-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px 24px;
   flex-wrap: wrap;
-  padding: 16px 20px;
+  padding: 18px 20px;
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
@@ -19,14 +60,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 22px;
-  font-weight: 500;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .module-desc {
   margin-top: 6px;
-  font-size: 11px;
+  font-size: 14px;
   color: #475569;
 }
 
@@ -38,7 +79,7 @@
 }
 
 .module-badge {
-  padding: 3px 12px;
+  padding: 4px 12px;
   border: 1px solid;
   border-radius: 999px;
   font-size: 12px;
@@ -58,17 +99,18 @@
 }
 
 .module-info {
-  font-size: 13px;
+  font-size: 14px;
   color: #0f172a;
 }
 
+/* Tombol kelola */
 .module-manage {
-  padding: 7px 18px;
+  padding: 8px 18px;
   background: #2563eb;
   border: 0;
   border-radius: 6px;
   color: #fff;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -77,6 +119,7 @@
   background: #1d4ed8;
 }
 
+/* Tombol edit dan hapus */
 .icon-btn {
   display: inline-flex;
   align-items: center;
@@ -105,6 +148,8 @@
 .icon-btn--delete:hover {
   background: #fee2e2;
 }
+
+/* Modal modul */
 .modul-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -128,7 +173,7 @@
 }
 
 .modul-modal h2 {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: Arial, sans-serif;
   font-size: 20px;
 }
 
@@ -136,7 +181,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -155,7 +200,7 @@
   background: #fee2e2;
   border-radius: 6px;
   color: #b91c1c;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .modul-modal-actions {
@@ -190,26 +235,8 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
-.modul-header h1 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 28px;
-  font-weight: 700;
-}
 
-.modul-header p {
-  max-width: 520px;
-  margin-top: 8px;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.modul-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  margin-top: 24px;
-}
-
+/* Kondisi daftar modul */
 .modul-state {
   padding: 32px 16px;
   text-align: center;
@@ -223,9 +250,11 @@
 .modul-state button {
   margin-top: 10px;
   padding: 6px 16px;
+  font-size: 14px;
   cursor: pointer;
 }
 
+/* Tombol tambah modul */
 .modul-add {
   display: flex;
   align-items: center;
@@ -238,7 +267,7 @@
   border: 1px solid #2563eb;
   border-radius: 8px;
   color: #2563eb;
-  font-family: inherit;
+  font-family: Arial, sans-serif;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -246,4 +275,23 @@
 
 .modul-add:hover {
   background: #eff6ff;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .modul-page {
+    padding: 16px 0;
+  }
+
+  .module-card {
+    padding: 16px;
+  }
+
+  .module-meta {
+    width: 100%;
+  }
+
+  .modul-header h1 {
+    font-size: 20px;
+  }
 }
