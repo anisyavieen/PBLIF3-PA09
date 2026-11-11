@@ -231,42 +231,46 @@
   margin-top: 12px;
 }
 
+
 .burn-stage {
   min-height: 265px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 18px;
+  padding: 25px 18px;
   overflow: hidden;
 }
 
 .burn-label {
   color: #758096;
   font-size: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
+/* Area visualisasi horizontal */
 .propellant-visual {
   position: relative;
-  width: 100px;
-  height: 150px;
+  width: 300px;
+  max-width: 100%;
+  height: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-
+/* Bentuk propelan horizontal */
 .propellant-body {
   position: relative;
-  width: 39px;
-  height: 130px;
+  width: 260px;
+  max-width: 100%;
+  height: 39px;
   flex-shrink: 0;
-  border-radius: 8px 8px 3px 3px;
+  border-radius: 8px;
   overflow: hidden;
 
   background: linear-gradient(
-    90deg,
+    180deg,
     #303744 0%,
     #7b8491 18%,
     #c8ced7 43%,
@@ -281,53 +285,53 @@
 
 .propellant-core {
   position: absolute;
-  inset: 5px 7px 0;
+  inset: 7px 0 7px;
 
   background: linear-gradient(
-    90deg,
+    180deg,
     #444b57,
     #929aa4 50%,
     #414957
   );
 }
 
-/* Area yang sudah dilewati pembakaran */
+/* Bagian propelan yang sudah terbakar */
 .burned-section {
   position: absolute;
-  left: 0;
-  right: 0;
+  top: 0;
   bottom: 0;
-  height: var(--burn-percent, 0%);
+  left: 0;
+  width: var(--burn-percent, 0%);
   z-index: 2;
 
   background:
     radial-gradient(
-      ellipse at 50% 15%,
+      ellipse at 85% 50%,
       #77706b 0%,
       transparent 55%
     ),
     repeating-linear-gradient(
-      105deg,
+      15deg,
       #171719 0px,
       #343035 3px,
       #1c1b20 5px,
       #494044 7px
     );
 
-  transition: height 0.15s linear;
+  transition: width 0.15s linear;
 }
 
-/* Batas bara yang bergerak naik */
+/* Batas api bergerak dari kiri ke kanan */
 .burn-front {
   position: absolute;
-  left: -2px;
-  right: -2px;
-  bottom: var(--burn-percent, 0%);
-  height: 7px;
+  top: -3px;
+  bottom: -3px;
+  left: var(--burn-offset, 0px);
+  width: 7px;
   z-index: 3;
 
   background: linear-gradient(
-    0deg,
+    90deg,
     #ff3b0b 0%,
     #ff6a1b 35%,
     #ffc04b 72%,
@@ -339,20 +343,21 @@
     0 0 10px #ff6a22,
     0 0 18px #ff9b38;
 
-  transition: bottom 0.15s linear;
+  transition: left 0.15s linear;
 }
 
 .is-burning .burn-front {
   animation: ember-flicker 0.12s infinite alternate;
 }
 
+/* Cahaya api */
 .burn-glow {
   position: absolute;
-  width: 55px;
-  height: 15px;
-  bottom: calc(10px + var(--burn-offset, 0px));
-  left: 50%;
-  transform: translateX(-50%);
+  width: 18px;
+  height: 55px;
+  left: calc(20px + var(--burn-offset, 0px));
+  top: 50%;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
 
   background: #ff5a18;
@@ -360,18 +365,20 @@
   opacity: 0.55;
   pointer-events: none;
 
-  transition: bottom 0.15s linear;
+  transition: left 0.15s linear;
 }
 
 .is-burning .burn-glow {
   animation: glow-pulse 0.3s infinite alternate;
 }
 
+/* Percikan api */
 .ember {
   position: absolute;
   width: 3px;
   height: 3px;
-  bottom: calc(var(--burn-percent, 0%) + 5px);
+  left: calc(20px + var(--burn-offset, 0px));
+  top: 50%;
   border-radius: 50%;
   background: #ff9b38;
   box-shadow: 0 0 5px #ff5a18;
@@ -384,21 +391,24 @@
 }
 
 .ember-one {
-  left: 4px;
+  margin-top: -10px;
 }
 
 .ember-two {
-  right: 5px;
+  margin-top: 0;
   animation-delay: 0.35s !important;
 }
 
 .ember-three {
-  left: 17px;
+  margin-top: 10px;
   animation-delay: 0.7s !important;
 }
 
+/* Abu pembakaran */
 .burn-ash {
   position: absolute;
+  left: calc(20px + var(--burn-offset, 0px));
+  top: 50%;
   width: 4px;
   height: 4px;
   border-radius: 50%;
