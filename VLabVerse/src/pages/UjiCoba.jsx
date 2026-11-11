@@ -16,6 +16,50 @@ const DEFAULTS = {
   web: 12.5,
 }
 
+const STORAGE_KEY = 'vlab_laju_bakar'
+
+// Membaca data propelan dari KelolaParameter
+function bacaDataPropelan() {
+  try {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+
+    if (!data || !Array.isArray(data.types)) {
+      return { types: [], params: {} }
+    }
+
+    const parameter = data.groups?.[0]?.params || []
+
+    const hasil = {}
+
+    data.types.forEach((jenis) => {
+      const nilai = {}
+
+      parameter.forEach((p) => {
+        const kode = p.kode
+        const value = jenis.vals?.[p.id]
+
+        if (kode) {
+          nilai[kode] = Number(
+            value !== undefined && String(value).trim() !== ''
+              ? value
+              : p.def
+          )
+        }
+      })
+
+      hasil[jenis.name] = nilai
+    })
+
+    return {
+      types: data.types,
+      params: hasil,
+    }
+  } catch (error) {
+    console.error('Gagal membaca data propelan:', error)
+    return { types: [], params: {} }
+  }
+}
+
 const format = (number, digits = 2) =>
   number.toLocaleString('id-ID', {
     minimumFractionDigits: digits,
@@ -26,11 +70,12 @@ export default function UjiCoba() {
   const [params, setParams] = useState(DEFAULTS)
   const [running, setRunning] = useState(false)
   const [elapsed, setElapsed] = useState(0)
+  const [dataPropelan, setDataPropelan] = useState(bacaDataPropelan)
   const [showResult, setShowResult] = useState(false)
 
   const [showPopup, setShowPopup] = useState(false)
 
-  // BARU: penanda supaya satu simulasi hanya tersimpan satu kali ke riwayat
+  // penanda supaya satu simulasi hanya tersimpan satu kali ke riwayat
   const sudahDisimpan = useRef(false)
 
   // Model sederhana: r = a × P^n.
@@ -63,7 +108,21 @@ export default function UjiCoba() {
     return () => window.clearInterval(timer)
   }, [running, burnRate, params.web])
 
-  // BARU: simpan ke riwayat (dibaca halaman admin "Hasil Simulasi")
+  useEffect(() => {
+    const perbaruiData = () => {
+      setDataPropelan(bacaDataPropelan())
+    }
+
+    window.addEventListener('storage', perbaruiData)
+    window.addEventListener('focus', perbaruiData)
+
+    return () => {
+      window.removeEventListener('storage', perbaruiData)
+      window.removeEventListener('focus', perbaruiData)
+    }
+  }, [])
+
+  // simpan ke riwayat (dibaca halaman admin "Hasil Simulasi")
   // begitu pembakaran selesai sampai propelan habis.
   useEffect(() => {
   const selesai = !running && elapsed > 0 && progress >= 0.999;
@@ -163,24 +222,34 @@ export default function UjiCoba() {
           <p className="section-subtitle">Jenis propelan</p>
 
           <div className="propellant-options">
-            {['KNSB', 'APCP', 'Lainnya'].map((item) => (
-              <button
-                key={item}
-                className={`propellant-chip ${
-                  params.propellant === item ? 'active' : ''
-                }`}
-                onClick={() =>
-                  setParams((previous) => ({
-                    ...previous,
-                    propellant: item,
-                  }))
-                }
-                disabled={true}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
+          {dataPropelan.types.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={`propellant-chip ${
+                params.propellant === item.name ? 'active' : ''
+              }`}
+              onClick={() => {
+                const nilai = dataPropelan.params[item.name] || {}
+
+                setParams((previous) => ({
+                  ...previous,
+                  propellant: item.name,
+                  coefficient: nilai.a ?? previous.coefficient,
+                  exponent: nilai.n ?? previous.exponent,
+                  density: nilai.rho ?? previous.density,
+                  pressure: nilai.pc ?? previous.pressure,
+                  area: nilai.ab ?? previous.area,
+                  web: nilai.wb ?? previous.web,
+                }))
+              }}
+              disabled={running}
+              aria-pressed={params.propellant === item.name}
+            >
+              {item.name}
+            </button>
+          ))}
+        </div>
 
           <div className="parameter-list">
             <Parameter
@@ -403,34 +472,34 @@ export default function UjiCoba() {
   )
 }
 
-function Parameter({
-  label,
-  value,
-  display,
-  description,
-  min,
-  max,
-  step,
-  onChange,
-  disabled,
-}) {
-  return (
-    <div className="parameter-item">
-      <div className="parameter-heading">
-        <label>{label}</label>
-        <span>{display}</span>
+  function Parameter({
+    label,
+    value,
+    display,
+    description,
+    min,
+    max,
+    step,
+    onChange,
+    disabled,
+  }) {
+    return (
+      <div className="parameter-item">
+        <div className="parameter-heading">
+          <label>{label}</label>
+          <span>{display}</span>
+        </div>
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          disabled={disabled}
+          aria-label={label}
+        />
+        <p>{description}</p>
       </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        disabled={disabled}
-        aria-label={label}
-      />
-      <p>{description}</p>
-    </div>
-  )
-}
+    )
+  }
