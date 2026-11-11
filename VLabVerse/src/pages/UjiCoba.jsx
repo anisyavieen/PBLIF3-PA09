@@ -267,6 +267,14 @@ export default function UjiCoba() {
     progresPembakaran: `${format(progress * 100, 1)}%`
   }
 
+  const modulTerpilih = modules.find(
+    (item) => String(item.id ?? item._id) === selectedModule
+  )
+
+  const isModulLajuBakar =
+    (modulTerpilih?.nama ?? modulTerpilih?.name ?? '').toLowerCase() ===
+    'laju bakar'
+
   return (
     <div className="uji-page">
       <Navbar />
@@ -303,6 +311,8 @@ export default function UjiCoba() {
         </Select>
       </div>
 
+      {isModulLajuBakar ? (
+        <>
         <section className="parameter-section">
           <h2><span>⚙</span> PARAMETER PROPELAN</h2>
           <p className="section-subtitle">Jenis propelan</p>
@@ -553,6 +563,16 @@ export default function UjiCoba() {
           onClose={() => setShowPopup(false)}
           hasilSimulasi={dataHasilSimulasi}
         />
+        </>
+      ) : (
+        <div className="module-development">
+          <h2>Modul Sedang Dikembangkan</h2>
+          <p>
+            Modul ini sedang dalam tahap pengembangan.
+            Nantikan fitur selanjutnya!
+          </p>
+        </div>
+      )}
       </main>
     </div>
   )

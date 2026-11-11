@@ -29,7 +29,7 @@ export default function Navbar() {
       </div>
 
       <div className="vlab-nav-links">
-      <a href="/">Home</a>
+      <a href="/">Beranda</a>
       <a href="/#fitur">Fitur</a>
       <a href="/#cara-kerja">Cara Kerja</a>
       <a href="/#kontak">Kontak</a>

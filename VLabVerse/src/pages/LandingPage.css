@@ -12,7 +12,7 @@
 /* BAGIAN HERO */
 .landing-hero {
   min-height: 390px;
-  padding: 45px 5%;
+  padding: 45px 6.25%;
   display: flex;
   align-items: center;
   justify-content: space-between;
