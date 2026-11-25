@@ -181,6 +181,7 @@ export default function KelolaParameter() {
     if (pesan) return notify(pesan, 'error')
     const data = { groups: norm.groups, types: norm.types, status }
     simpanData(data) // TODO: ganti dengan panggilan API
+    window.dispatchEvent(new Event('vlab-propelan-updated'))
     setGroups(norm.groups)
     setTypes(norm.types)
     setBaseline(JSON.stringify(data))
