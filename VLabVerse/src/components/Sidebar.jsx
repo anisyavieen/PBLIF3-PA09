@@ -3,14 +3,11 @@ import './Sidebar.css'
 import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
-
-const MENU_ITEMS = [
-  { to: '/dashboard', label: 'Data Akun Admin', icon: <PeopleAltOutlinedIcon /> },
-]
+import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined'
 
 function getStoredUser() {
   try {
-    return JSON.parse(localStorage.getItem('user')) || {}
+    return JSON.parse(localStorage.getItem('user') || 'null') || {}
   } catch {
     return {}
   }
@@ -19,6 +16,24 @@ function getStoredUser() {
 function Sidebar({ open = false, onClose }) {
   const navigate = useNavigate()
   const user = getStoredUser()
+
+  const isPengguna = user.role === 'pengguna'
+
+  const menuItems = isPengguna
+    ? [
+        {
+          to: '/pengguna/riwayat',
+          label: 'Hasil Simulasi',
+          icon: <HistoryOutlinedIcon />,
+        },
+      ]
+    : [
+        {
+          to: '/dashboard',
+          label: 'Data Akun Admin',
+          icon: <PeopleAltOutlinedIcon />,
+        },
+      ]
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -40,15 +55,19 @@ function Sidebar({ open = false, onClose }) {
             <ScienceOutlinedIcon fontSize="medium" />
             <span>V-LabVerse</span>
           </div>
-          <p>Panel Super Admin</p>
+
+          <p>{isPengguna ? 'Panel Pengguna Umum' : 'Panel Super Admin'}</p>
         </div>
 
         <nav className="sidebar-nav" aria-label="Menu utama">
-          {MENU_ITEMS.map((item) => (
+          {menuItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
-              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              end
+              className={({ isActive }) =>
+                `sidebar-link ${isActive ? 'active' : ''}`
+              }
               onClick={onClose}
             >
               {item.icon}
@@ -63,9 +82,13 @@ function Sidebar({ open = false, onClose }) {
             <span>{user.email || '-'}</span>
           </div>
 
-          <button type="button" className="sidebar-logout" onClick={handleLogout}>
+          <button
+            type="button"
+            className="sidebar-logout"
+            onClick={handleLogout}
+          >
             <LogoutOutlinedIcon />
-            <span>Logout</span>
+            <span>Keluar</span>
           </button>
         </div>
       </aside>

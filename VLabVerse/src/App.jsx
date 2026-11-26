@@ -1,4 +1,10 @@
-import {BrowserRouter, Routes, Route ,Navigate,} from 'react-router-dom'
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom'
+
 import Login from './pages/Login.jsx'
 import KontrolAkunAdmin from './pages/KontrolAkunAdmin.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
@@ -6,13 +12,14 @@ import DashboardLayout from './components/DashboardLayout.jsx'
 import ModulLab from './pages/ModulLab.jsx'
 import NotFound from './pages/NotFound.jsx'
 import LandingPage from './pages/LandingPage.jsx'
-import './App.css'
 import LandingPageAdmin from './pages/LandingPageAdmin.jsx'
 import UjiCoba from './pages/UjiCoba.jsx'
 import KelolaParameter from './pages/KelolaParameter.jsx'
 import HasilSimulasi from './pages/HasilSimulasi.jsx'
+import HasilSimulasiPengguna from './pages/HasilSimulasiPengguna.jsx'
 import KelolaModulBaruComingSoon from './pages/KelolaModulBaruComingSoon.jsx'
 
+import './App.css'
 
 function DashboardHome() {
   let user = null
@@ -34,9 +41,6 @@ function DashboardHome() {
   return <Navigate to="/login" replace />
 }
 
-// Landingpage Admin
-
-
 export default function App() {
   return (
     <BrowserRouter>
@@ -45,15 +49,17 @@ export default function App() {
         <Route path="/uji-coba" element={<UjiCoba />} />
         <Route path="/login" element={<Login />} />
 
+        {/* Halaman Admin dan Super Admin */}
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['admin', 'super_admin']}>
               <DashboardLayout />
             </ProtectedRoute>
           }
         >
           <Route index element={<DashboardHome />} />
+
           <Route
             path="landingpage"
             element={<LandingPageAdmin />}
@@ -73,10 +79,29 @@ export default function App() {
             path="modul/:id/kelola-baru"
             element={<KelolaModulBaruComingSoon />}
           />
-
+          
           <Route
             path="riwayat"
             element={<HasilSimulasi />}
+          />
+        </Route>
+
+
+        <Route
+          path="/pengguna"
+          element={
+            <ProtectedRoute allowedRoles={['pengguna']}>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route
+            index
+            element={<Navigate to="riwayat" replace />}
+          />
+          <Route
+            path="riwayat"
+            element={<HasilSimulasiPengguna />}
           />
         </Route>
 

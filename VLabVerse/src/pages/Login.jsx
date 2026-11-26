@@ -4,7 +4,17 @@ import './Login.css'
 
 function FlaskIcon() {
   return (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M9 3h6" />
       <path d="M10 3v6.2L4.6 18.1A2 2 0 0 0 6.3 21h11.4a2 2 0 0 0 1.7-2.9L14 9.2V3" />
       <path d="M7.5 15h9" />
@@ -14,7 +24,17 @@ function FlaskIcon() {
 
 function EyeIcon({ off }) {
   return (
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      width="20"
+      height="20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" />
       <circle cx="12" cy="12" r="3" />
       {off && <path d="M3 3l18 18" />}
@@ -31,6 +51,7 @@ function Rocket() {
           <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
         </linearGradient>
       </defs>
+
       <path d="M62 190 L98 190 L84 238 L76 238 Z" fill="url(#flame)" />
       <path d="M80 6 C110 40 116 90 112 150 L112 190 L48 190 L48 150 C44 90 50 40 80 6 Z" fill="#0f172a" />
       <path d="M48 140 L14 176 L14 196 L48 184 Z" fill="#0f172a" />
@@ -47,6 +68,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
   const navigate = useNavigate()
 
   const handleLogin = async (e) => {
@@ -79,10 +101,27 @@ function Login() {
         return
       }
 
+      if (!data.token || !data.user) {
+        setError('Data login dari server tidak lengkap.')
+        return
+      }
+
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
 
-      navigate('/dashboard', { replace: true })
+      if (data.user.role === 'pengguna') {
+        // Pengguna umum masuk ke panel pengguna umum.
+        navigate('/pengguna/riwayat', { replace: true })
+      } else if (
+        data.user.role === 'admin' ||
+        data.user.role === 'super_admin'
+      ) {
+        navigate('/dashboard', { replace: true })
+      } else {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        setError('Role akun tidak dikenali.')
+      }
     } catch {
       setError('Tidak dapat terhubung ke server. Pastikan backend berjalan.')
     } finally {
@@ -108,10 +147,9 @@ function Login() {
             <span>V-LabVerse</span>
           </div>
 
-          <h1>Masuk sebagai Admin</h1>
+          <h1>Masuk ke V-LabVerse</h1>
           <p className="login-description">
-            Login hanya untuk Admin pengelolaan sistem. Pengguna umum tidak
-            memerlukan akun.
+            Masuk sebagai Admin atau Pengguna Umum untuk melanjutkan.
           </p>
 
           <form onSubmit={handleLogin}>
@@ -119,7 +157,7 @@ function Login() {
             <input
               id="email"
               type="email"
-              placeholder="Masukkan Email disini"
+              placeholder="Masukkan Email di sini"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="username"
@@ -131,29 +169,35 @@ function Login() {
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Masukkan password disini"
+                placeholder="Masukkan password di sini"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
                 required
               />
+
               <button
                 type="button"
                 className="toggle-password"
                 onClick={() => setShowPassword((value) => !value)}
-                aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+                aria-label={
+                  showPassword ? 'Sembunyikan password' : 'Lihat password'
+                }
               >
                 <EyeIcon off={!showPassword} />
               </button>
             </div>
 
-            {error && <p className="login-error" role="alert">{error}</p>}
+            {error && (
+              <p className="login-error" role="alert">
+                {error}
+              </p>
+            )}
 
             <button className="login-button" type="submit" disabled={loading}>
               {loading ? 'MEMPROSES...' : 'LOGIN'}
             </button>
           </form>
-
         </section>
       </div>
     </main>
