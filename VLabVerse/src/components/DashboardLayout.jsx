@@ -16,7 +16,9 @@ function DashboardLayout() {
     user = null
   }
 
-  if (!localStorage.getItem('token')) {
+  const token = localStorage.getItem('token')
+
+  if (!token || !user) {
     return <Navigate to="/login" replace />
   }
 
@@ -26,7 +28,7 @@ function DashboardLayout() {
 
   return (
     <div className="dashboard-layout">
-      {user?.role === 'admin' ? (
+      {user.role === 'admin' ? (
         <AdminSidebar
           open={sidebarOpen}
           onClose={handleCloseSidebar}
